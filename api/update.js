@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 4000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: 'You are a news aggregator bot. Search the web and summarize real current news into JSON format. Always return valid JSON only, no explanations.',
+        system: lang === 'en'    ? 'You are a news aggregator. Search web for latest Iran-Israel-US war 2026 news. Return ONLY valid JSON, no markdown, no explanations. All text fields must be in English. Numeric stats must be numbers with + sign like "1400+" not text descriptions.'   : 'Sen bir haber toplayıcısısın. Web\'de 2026 İran-İsrail-ABD savaşı haberlerini ara. SADECE geçerli JSON döndür, markdown yok, açıklama yok. Tüm metin alanları Türkçe olmalı. Sayısal istatistikler "1400+" gibi sayı olmalı, metin açıklaması olmamalı.',
         messages: [{
           role: 'user',
           content: lang === 'en'
