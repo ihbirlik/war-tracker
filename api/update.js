@@ -40,6 +40,54 @@ module.exports = async function handler(req, res) {
     if (s === -1) throw new Error('No JSON: ' + jsonStr.slice(0, 200));
 
     const parsed = JSON.parse(jsonStr.slice(s, e + 1));
+
+    // Normalize - model bazen Turkce key ismi kullanabiliyor
+    function norm(obj, ...keys) { for (const k of keys) { if (obj[k] != null) return obj[k]; } return undefined; }
+
+    if (parsed.meta) {
+      parsed.meta.day_count     = norm(parsed.meta, 'day_count','gun_sayisi','gunSayisi','gün_sayısı');
+      parsed.meta.last_updated  = norm(parsed.meta, 'last_updated','guncelleme_tarihi','son_guncelleme','tarih');
+      parsed.meta.war_status    = norm(parsed.meta, 'war_status','savas_durumu','durum','savas_statusu');
+    }
+
+    if (parsed.stats) {
+      const s = parsed.stats;
+      s.iran_casualties        = norm(s,'iran_casualties','iran_olum_sayisi','iran_kayip','iran_olum');
+      s.iran_casualties_source = norm(s,'iran_casualties_source','iran_kaynak','iran_kaynagi','kaynak');
+      s.iran_sources           = norm(s,'iran_sources','iran_kaynaklar');
+      s.us_israel_strikes      = norm(s,'us_israel_strikes','us_israel_hava_saldiri','abd_israel_saldiri','saldiri_sayisi');
+      s.strikes_sources        = norm(s,'strikes_sources','saldiri_kaynaklar');
+      s.lebanon_casualties     = norm(s,'lebanon_casualties','lubnan_olum_sayisi','lubnan_kayip','lubnan_olum');
+      s.lebanon_sources        = norm(s,'lebanon_sources','lubnan_kaynaklar');
+      s.war_cost_usd           = norm(s,'war_cost_usd','savas_maliyeti','maliyet','toplam_maliyet');
+      s.cost_sources           = norm(s,'cost_sources','maliyet_kaynaklar');
+      s.displaced_civilians    = norm(s,'displaced_civilians','yerinden_edilen','yerinden_edilen_sivil','multeci');
+      s.displaced_sources      = norm(s,'displaced_sources','yerinden_edilen_kaynaklar');
+    }
+
+    if (parsed.econ) {
+      const e = parsed.econ;
+      // gold veya altin
+      if (!e.gold && e.altin) e.gold = e.altin;
+      ['brent','wti','usd','gold'].forEach(k => {
+        if (e[k]) {
+          e[k].val = norm(e[k],'val','deger','fiyat','value');
+          e[k].chg = norm(e[k],'chg','degisim','change','notlar','not');
+          e[k].dir = norm(e[k],'dir','yon','direction') || 'up';
+        }
+      });
+    }
+
+    if (parsed.feed && Array.isArray(parsed.feed)) {
+      parsed.feed = parsed.feed.map(item => ({
+        ...item,
+        time: norm(item,'time','tarih','saat','zaman') || '',
+        type: norm(item,'type','tur','tip','tür') || 'info',
+        tags: norm(item,'tags','etiketler','tag') || [],
+        text: norm(item,'text','baslik','metin','haber','icerik') || '',
+      }));
+    }
+
     res.setHeader('Cache-Control', 's-maxage=300');
     return res.status(200).json({ success: true, data: parsed });
   } catch (err) {
