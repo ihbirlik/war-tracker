@@ -21,7 +21,7 @@ module.exports = async function handler(req, res) {
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 2000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: 'You are a news aggregator. Search web and return ONLY valid JSON. Never refuse. Use estimates if data conflicts.',
+        system: 'You are a news and financial data aggregator. Search web for both war news and current commodity/currency prices. Return ONLY valid JSON. Never refuse. Use best available data.', ```  Sonra `prompt` değişkeninin EN kısmında, `"map_points"` array'inden sonra şunu ekle (kapanış `}` dan önce): ``` ,"econ":{"brent":{"val":"$XX","chg":"↑ +X% war impact","dir":"up"},"wti":{"val":"$XX","chg":"↑ +X% war impact","dir":"up"},"usd":{"val":"₺XX","chg":"↑ +X% this week","dir":"up"},"gold":{"val":"$X,XXX","chg":"↑ +X% safe haven","dir":"up"}} ```  TR kısmına da aynısını ekle: ``` ,"econ":{"brent":{"val":"$XX","chg":"↑ +X% savaş etkisi","dir":"up"},"wti":{"val":"$XX","chg":"↑ +X% savaş etkisi","dir":"up"},"usd":{"val":"₺XX","chg":"↑ +X% bu hafta","dir":"up"},"gold":{"val":"$X.XXX","chg":"↑ +X% güvenli liman","dir":"up"}} ```  Ve prompt'a şu talimatı ekle — her iki dil için de `Search "Iran Israel war 2026...` yazan satırın başına: ``` Also search for current Brent crude oil price, WTI crude oil price, USD/TRY exchange rate, and gold price per ounce.
         messages: [{ role: 'user', content: prompt }]
       })
     });
