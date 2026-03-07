@@ -7,7 +7,7 @@ module.exports = async function handler(req, res) {
   async function callClaude(system, userMsg, useSearch) {
     const body = {
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 1500,
       system,
       messages: [{ role: 'user', content: userMsg }]
     };
@@ -38,98 +38,42 @@ module.exports = async function handler(req, res) {
     return JSON.parse(text.slice(s, e + 1));
   }
 
+  function normalizeEcon(econ) {
+    if (!econ) return econ;
+    if (!econ.gold) econ.gold = econ.altin || econ.gold_usd || econ.altin_usd;
+    if (!econ.usd) econ.usd = econ.usd_try || econ.dolar || econ.dolar_tl;
+    ['brent','wti','usd','gold'].forEach(k => {
+      if (econ[k] && typeof econ[k] === 'object') {
+        econ[k].val = econ[k].val || econ[k].deger || econ[k].fiyat || econ[k].value || '';
+        econ[k].chg = econ[k].chg || econ[k].degisim || econ[k].change || econ[k].notlar || '';
+        econ[k].dir = econ[k].dir || econ[k].yon || 'up';
+      }
+    });
+    return econ;
+  }
+
   try {
-    // Türkçe haber ve veri çek
-    const trText = await callClaude(
-      'Sen bir haber toplayıcısısın. Web ara, SADECE geçerli JSON döndür, markdown yok. Kesinlikle sadece şu key isimleri kullan, başka key ismi kullanma.',
-      'Ara: "İran İsrail savaş 2026 kayıp Mart" ve "Brent petrol fiyatı bugün" ve "altın fiyatı bugün" ve "dolar TL kuru bugün". SADECE bu JSON yapısını döndür, key isimlerini değiştirme: {"meta":{"day_count":9,"last_updated":"8 Mart 2026","war_status":"durum"},"stats":{"iran_casualties":"1400+","iran_casualties_source":"Reuters","iran_sources":[{"name":"İran Kızılay","val":"1332+"},{"name":"Reuters","val":"1400+"}],"us_israel_strikes":"3000+","strikes_sources":[{"name":"IDF","val":"3000+"},{"name":"Al Jazeera","val":"3200+"}],"lebanon_casualties":"200+","lebanon_sources":[{"name":"Lübnan Sağlık","val":"200+"}],"war_cost_usd":"$4M+","cost_sources":[{"name":"Pentagon","val":"$3.7M+"}],"displaced_civilians":"100000+","displaced_sources":[{"name":"BM OCHA","val":"95000+"}]},"econ":{"brent":{"val":"$92","chg":"savaş etkisi +18%","dir":"up"},"wti":{"val":"$87","chg":"savaş etkisi +16%","dir":"up"},"usd":{"val":"₺38.2","chg":"bu hafta +2%","dir":"up"},"gold":{"val":"$3150","chg":"güvenli liman +4%","dir":"up"}},"feed":[{"time":"08 MAR 10:00","type":"critical","tags":["iran"],"text":"gerçek Türkçe haber"},{"time":"08 MAR 08:00","type":"warning","tags":["usa","israel"],"text":"gerçek Türkçe haber"},{"time":"08 MAR 06:00","type":"info","tags":["gulf"],"text":"gerçek Türkçe haber"},{"time":"07 MAR 20:00","type":"critical","tags":["iran"],"text":"gerçek Türkçe haber"},{"time":"07 MAR 16:00","type":"warning","tags":["usa"],"text":"gerçek Türkçe haber"},{"time":"07 MAR 12:00","type":"critical","tags":["iran","israel"],"text":"gerçek Türkçe haber"}],"factions":{"israel":{"operation":"Epik Öfke","status":"DEVAM","aircraft":"80+","reserves":"70000","casualties":"12+","hezbollah":"AKTİF","strength_pct":78},"iran":{"ballistic_reduction":"-%92","drone_reduction":"-%85","navy_status":"İmha","airforce_status":"İmha","casualties":"1400+","hormuz":"Tehdit","strength_pct":15},"usa":{"targets_hit":"3000+","ships_destroyed":"43","us_casualties":"6","cost_per_day":"$900M","timeline":"4-6 hafta","demand":"Teslim","strength_pct":90}},"banner":"9. GÜN SAVAŞ DEVAM","map_points":[{"id":"tehran","label":"Tahran","tooltip":"ABD-İsrail saldırıları","type":"strike_us_israel"},{"id":"isfahan","label":"İsfahan","tooltip":"Askeri hedefler","type":"strike_us_israel"},{"id":"tel_aviv","label":"Tel Aviv","tooltip":"İran füzeleri","type":"strike_iran"},{"id":"beirut","label":"Beyrut","tooltip":"Hizbullah çatışmaları","type":"strike_us_israel"},{"id":"kuwait","label":"Kuveyt","tooltip":"ABD üssü","type":"strike_iran"},{"id":"dubai","label":"Dubai","tooltip":"İHA saldırıları","type":"strike_iran"}]}',
-      true
-    );
-
-    const trData = parseJSON(trText);
-
-    // econ'u normalize et - model bazen farklı key kullanıyor
-    if (trData.econ) {
-      const e = trData.econ;
-      if (!e.gold && e.altin) e.gold = e.altin;
-      if (!e.gold && e.gold_usd) e.gold = e.gold_usd;
-      if (!e.usd && e.usd_try) e.usd = e.usd_try;
-      if (!e.usd && e.dolar) e.usd = e.dolar;
-      ['brent','wti','usd','gold'].forEach(k => {
-        if (e[k] && typeof e[k] === 'object') {
-          if (!e[k].val) e[k].val = e[k].deger || e[k].fiyat || e[k].value || '';
-          if (!e[k].chg) e[k].chg = e[k].degisim || e[k].change || e[k].notlar || '';
-          if (!e[k].dir) e[k].dir = 'up';
-        }
-      });
-    }
-
     if (lang === 'tr') {
+      const text = await callClaude(
+        'Haber toplayıcısısın. SADECE geçerli JSON döndür, markdown yok, key isimlerini değiştirme.',
+        'Ara: "İran İsrail savaş 2026 Mart kayıp" ve "Brent petrol fiyat bugün" ve "dolar TL kur bugün" ve "altın fiyat bugün". JSON: {"meta":{"day_count":9,"last_updated":"8 Mart 2026","war_status":"DEVAM"},"stats":{"iran_casualties":"?","iran_casualties_source":"?","iran_sources":[{"name":"?","val":"?"}],"us_israel_strikes":"?","strikes_sources":[{"name":"?","val":"?"}],"lebanon_casualties":"?","lebanon_sources":[{"name":"?","val":"?"}],"war_cost_usd":"?","cost_sources":[{"name":"?","val":"?"}],"displaced_civilians":"?","displaced_sources":[{"name":"?","val":"?"}]},"econ":{"brent":{"val":"?","chg":"?","dir":"up"},"wti":{"val":"?","chg":"?","dir":"up"},"usd":{"val":"?","chg":"?","dir":"up"},"gold":{"val":"?","chg":"?","dir":"up"}},"feed":[{"time":"08 MAR 10:00","type":"critical","tags":["iran"],"text":"?"},{"time":"08 MAR 08:00","type":"warning","tags":["usa"],"text":"?"},{"time":"08 MAR 06:00","type":"info","tags":["gulf"],"text":"?"},{"time":"07 MAR 20:00","type":"critical","tags":["iran"],"text":"?"},{"time":"07 MAR 16:00","type":"warning","tags":["israel"],"text":"?"},{"time":"07 MAR 12:00","type":"critical","tags":["iran"],"text":"?"}],"factions":{"israel":{"operation":"Epik Öfke","status":"DEVAM","aircraft":"80+","reserves":"70000","casualties":"12+","hezbollah":"AKTİF","strength_pct":78},"iran":{"ballistic_reduction":"-%92","drone_reduction":"-%85","navy_status":"İmha","airforce_status":"İmha","casualties":"?","hormuz":"Tehdit","strength_pct":15},"usa":{"targets_hit":"?","ships_destroyed":"43","us_casualties":"6","cost_per_day":"$900M","timeline":"4-6 hafta","demand":"Teslim","strength_pct":90}},"banner":"9. GÜN SAVAŞ DEVAM","map_points":[{"id":"tehran","label":"Tahran","tooltip":"ABD-İsrail saldırıları","type":"strike_us_israel"},{"id":"isfahan","label":"İsfahan","tooltip":"Askeri hedefler","type":"strike_us_israel"},{"id":"tel_aviv","label":"Tel Aviv","tooltip":"İran füzeleri","type":"strike_iran"},{"id":"beirut","label":"Beyrut","tooltip":"Hizbullah çatışmaları","type":"strike_us_israel"},{"id":"kuwait","label":"Kuveyt","tooltip":"ABD üssü","type":"strike_iran"},{"id":"dubai","label":"Dubai","tooltip":"İHA saldırıları","type":"strike_iran"}]}',
+        true
+      );
+      const data = parseJSON(text);
+      data.econ = normalizeEcon(data.econ);
       res.setHeader('Cache-Control', 's-maxage=300');
-      return res.status(200).json({ success: true, data: trData });
+      return res.status(200).json({ success: true, data });
+    } else {
+      const text = await callClaude(
+        'News aggregator. Return ONLY valid JSON, no markdown, keep exact key names.',
+        'Search: "Iran Israel war 2026 March casualties" and "Brent oil price today" and "USD TRY rate today" and "gold price today". JSON: {"meta":{"day_count":9,"last_updated":"March 8 2026","war_status":"ONGOING"},"stats":{"iran_casualties":"?","iran_casualties_source":"?","iran_sources":[{"name":"?","val":"?"}],"us_israel_strikes":"?","strikes_sources":[{"name":"?","val":"?"}],"lebanon_casualties":"?","lebanon_sources":[{"name":"?","val":"?"}],"war_cost_usd":"?","cost_sources":[{"name":"?","val":"?"}],"displaced_civilians":"?","displaced_sources":[{"name":"?","val":"?"}]},"econ":{"brent":{"val":"?","chg":"?","dir":"up"},"wti":{"val":"?","chg":"?","dir":"up"},"usd":{"val":"?","chg":"?","dir":"up"},"gold":{"val":"?","chg":"?","dir":"up"}},"feed":[{"time":"08 MAR 10:00","type":"critical","tags":["iran"],"text":"?"},{"time":"08 MAR 08:00","type":"warning","tags":["usa"],"text":"?"},{"time":"08 MAR 06:00","type":"info","tags":["gulf"],"text":"?"},{"time":"07 MAR 20:00","type":"critical","tags":["iran"],"text":"?"},{"time":"07 MAR 16:00","type":"warning","tags":["israel"],"text":"?"},{"time":"07 MAR 12:00","type":"critical","tags":["iran"],"text":"?"}],"factions":{"israel":{"operation":"Epic Fury","status":"ONGOING","aircraft":"80+","reserves":"70000","casualties":"12+","hezbollah":"ACTIVE","strength_pct":78},"iran":{"ballistic_reduction":"-92%","drone_reduction":"-85%","navy_status":"Destroyed","airforce_status":"Destroyed","casualties":"?","hormuz":"Threatened","strength_pct":15},"usa":{"targets_hit":"?","ships_destroyed":"43","us_casualties":"6","cost_per_day":"$900M","timeline":"4-6 weeks","demand":"Surrender","strength_pct":90}},"banner":"DAY 9 WAR ONGOING","map_points":[{"id":"tehran","label":"Tehran","tooltip":"US-Israel airstrikes","type":"strike_us_israel"},{"id":"isfahan","label":"Isfahan","tooltip":"Military targets","type":"strike_us_israel"},{"id":"tel_aviv","label":"Tel Aviv","tooltip":"Iranian missiles","type":"strike_iran"},{"id":"beirut","label":"Beirut","tooltip":"Hezbollah clashes","type":"strike_us_israel"},{"id":"kuwait","label":"Kuwait","tooltip":"US base attacked","type":"strike_iran"},{"id":"dubai","label":"Dubai","tooltip":"Drone attacks","type":"strike_iran"}]}',
+        true
+      );
+      const data = parseJSON(text);
+      data.econ = normalizeEcon(data.econ);
+      res.setHeader('Cache-Control', 's-maxage=300');
+      return res.status(200).json({ success: true, data });
     }
-
-    // EN modu: haberleri İngilizceye çevir
-    const feedItems = (trData.feed || []);
-    const textsToTranslate = feedItems.map(f => f.text).join('\n||||\n');
-    const bannerTR = trData.banner || '';
-    const statusTR = trData.meta?.war_status || '';
-
-    const enRaw = await callClaude(
-      'Professional translator. Translate Turkish to English. Return ONLY JSON, no explanation.',
-      `Translate to English. Return ONLY this JSON structure:
-{"banner":"translated banner","war_status":"translated status","feed":["translated item 1","translated item 2","translated item 3","translated item 4","translated item 5","translated item 6"]}
-
-Turkish texts:
-BANNER: ${bannerTR}
-STATUS: ${statusTR}
-FEED ITEMS:
-${textsToTranslate}`,
-      false
-    );
-
-    let translations = { banner: bannerTR, war_status: statusTR, feed: feedItems.map(f => f.text) };
-    try { translations = parseJSON(enRaw); } catch(e) {}
-
-    const enData = {
-      ...trData,
-      banner: translations.banner || bannerTR,
-      meta: {
-        ...trData.meta,
-        war_status: translations.war_status || statusTR,
-        last_updated: 'March 8, 2026',
-      },
-      stats: {
-        ...trData.stats,
-        iran_casualties_source: trData.stats?.iran_casualties_source || 'Reuters',
-        iran_sources: (trData.stats?.iran_sources || []).map(s => ({...s, name: s.name?.replace('İran Kızılay','Iranian Red Crescent').replace('Lübnan Sağlık','Lebanon Health Min.').replace('BM OCHA','UN OCHA')})),
-        strikes_sources: (trData.stats?.strikes_sources || []),
-        lebanon_sources: (trData.stats?.lebanon_sources || []).map(s => ({...s, name: s.name?.replace('Lübnan Sağlık','Lebanon Health Min.')})),
-        cost_sources: (trData.stats?.cost_sources || []),
-        displaced_sources: (trData.stats?.displaced_sources || []).map(s => ({...s, name: s.name?.replace('BM OCHA','UN OCHA').replace('Tahmin','Estimate')})),
-      },
-      feed: feedItems.map((item, i) => ({
-        ...item,
-        text: (translations.feed || [])[i] || item.text,
-      })),
-      factions: {
-        israel: { ...trData.factions?.israel, operation: 'Epic Fury', status: 'ONGOING', hezbollah: 'ACTIVE / IRON DOME' },
-        iran:   { ...trData.factions?.iran, navy_status: 'Destroyed', airforce_status: 'Destroyed', hormuz: 'Threatened', ballistic_reduction: '-92%', drone_reduction: '-85%' },
-        usa:    { ...trData.factions?.usa, timeline: '4-6 weeks', demand: 'Unconditional surrender' },
-      },
-      map_points: [
-        {id:'tehran',label:'Tehran',tooltip:'US-Israel airstrikes ongoing',type:'strike_us_israel'},
-        {id:'isfahan',label:'Isfahan',tooltip:'Military targets hit',type:'strike_us_israel'},
-        {id:'tel_aviv',label:'Tel Aviv',tooltip:'Iranian missile attacks',type:'strike_iran'},
-        {id:'beirut',label:'Beirut',tooltip:'Hezbollah clashes',type:'strike_us_israel'},
-        {id:'kuwait',label:'Kuwait',tooltip:'US base attacked',type:'strike_iran'},
-        {id:'dubai',label:'Dubai',tooltip:'Drone attacks',type:'strike_iran'},
-      ]
-    };
-
-    res.setHeader('Cache-Control', 's-maxage=300');
-    return res.status(200).json({ success: true, data: enData });
-
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
