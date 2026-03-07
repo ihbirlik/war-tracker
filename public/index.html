@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Orta Doğu Savaş Takip Merkezi</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a0f;--surface:#0a1520;--surface2:#0f1f30;--border:#1a3a5c;--red:#ff4444;--orange:#ff8800;--blue:#00ccff;--green:#00ff88;--text:#c8dde8;--dim:#4a7a99;--mono:'Share Tech Mono',monospace;--display:'Bebas Neue',sans-serif;--body:'IBM Plex Sans',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,204,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,204,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:20px;}
+header{border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.logo{display:flex;align-items:center;gap:14px;}
+.dot{width:14px;height:14px;background:var(--red);border-radius:50%;animation:pulse 1s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,68,68,.7);}50%{box-shadow:0 0 0 8px rgba(255,68,68,0);}}
+h1{font-family:var(--display);font-size:clamp(22px,4vw,40px);letter-spacing:3px;color:#fff;line-height:1;}
+h1 span{color:var(--red);}
+.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.live-badge{background:var(--red);color:#fff;font-family:var(--mono);font-size:11px;padding:3px 10px;border-radius:2px;letter-spacing:2px;animation:blink 2s infinite;}
+@keyframes blink{0%,80%,100%{opacity:1;}40%{opacity:.4;}}
+#clock{font-family:var(--mono);font-size:12px;color:var(--dim);}
+#banner{background:linear-gradient(90deg,rgba(255,68,68,.1),rgba(255,136,0,.1),rgba(255,68,68,.1));border:1px solid rgba(255,68,68,.3);padding:10px 16px;border-radius:4px;margin-bottom:14px;font-family:var(--mono);font-size:12px;color:var(--orange);position:relative;overflow:hidden;}
+#banner::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,136,0,.05),transparent);animation:scan 3s linear infinite;}
+@keyframes scan{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
+#status-bar{padding:8px 14px;border-radius:4px;margin-bottom:16px;font-family:var(--mono);font-size:11px;border:1px solid;transition:all .5s;}
+.s-load{color:var(--blue);border-color:rgba(0,204,255,.3);background:rgba(0,204,255,.05);}
+.s-ok{color:var(--green);border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.05);}
+.s-err{color:var(--orange);border-color:rgba(255,136,0,.3);background:rgba(255,136,0,.05);}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px;}
+.sc{background:var(--surface);border:1px solid var(--border);padding:16px;border-radius:4px;position:relative;overflow:hidden;transition:border-color .3s;}
+.sc:hover{border-color:var(--blue);}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc.red::before{background:var(--red);}.sc.orange::before{background:var(--orange);}.sc.blue::before{background:var(--blue);}.sc.green::before{background:var(--green);}
+.sc-label{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.sc-val{font-family:var(--display);font-size:34px;line-height:1;margin-bottom:4px;}
+.sc.red .sc-val{color:var(--red);}.sc.orange .sc-val{color:var(--orange);}.sc.blue .sc-val{color:var(--blue);}.sc.green .sc-val{color:var(--green);}
+.sc-sub{font-size:11px;color:var(--dim);}
+.main{display:grid;grid-template-columns:1fr 370px;gap:16px;margin-bottom:20px;}
+@media(max-width:900px){.main{grid-template-columns:1fr;}}
+.map-panel,.feed-panel{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.feed-panel{display:flex;flex-direction:column;}
+.panel-hdr{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 16px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:2px;display:flex;justify-content:space-between;}
+.panel-hdr span{color:var(--blue);}
+.map-area{position:relative;height:420px;background:#071520;overflow:hidden;}
+.map-svg{width:100%;height:100%;}
+.strike-pt{cursor:pointer;}
+.ring{animation:ring 2s ease-out infinite;transform-origin:center;}
+@keyframes ring{0%{r:6;opacity:1;}100%{r:22;opacity:0;}}
+.trail{stroke-dasharray:5 3;animation:dash 1s linear infinite;}
+@keyframes dash{to{stroke-dashoffset:-16;}}
+.tooltip{position:absolute;background:var(--surface2);border:1px solid var(--blue);border-radius:4px;padding:8px 12px;font-size:11px;font-family:var(--mono);color:var(--text);pointer-events:none;opacity:0;transition:opacity .2s;z-index:100;max-width:210px;line-height:1.5;}
+.feed-scroll{flex:1;overflow-y:auto;max-height:420px;padding:10px;display:flex;flex-direction:column;gap:8px;}
+.feed-scroll::-webkit-scrollbar{width:4px;}.feed-scroll::-webkit-scrollbar-thumb{background:var(--border);}
+.fi{border:1px solid var(--border);border-radius:3px;padding:10px 12px;background:var(--surface2);animation:slidein .4s ease-out;}
+@keyframes slidein{from{transform:translateX(16px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.fi.critical{border-left:3px solid var(--red);}.fi.warning{border-left:3px solid var(--orange);}.fi.info{border-left:3px solid var(--blue);}.fi.intercept{border-left:3px solid var(--green);}
+.fi-time{font-family:var(--mono);font-size:10px;color:var(--dim);margin-bottom:4px;}
+.fi-text{font-size:12px;line-height:1.5;}
+.tag{display:inline-block;font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:2px;margin-right:4px;letter-spacing:1px;text-transform:uppercase;}
+.t-iran{background:rgba(255,68,68,.2);color:var(--red);}.t-israel{background:rgba(0,204,255,.15);color:var(--blue);}.t-usa{background:rgba(0,255,136,.15);color:var(--green);}.t-gulf{background:rgba(255,136,0,.15);color:var(--orange);}.t-intercept{background:rgba(0,255,136,.1);color:var(--green);}
+.factions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:768px){.factions{grid-template-columns:1fr;}}
+.fc{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.fc-hdr{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.fc-name{font-family:var(--display);font-size:20px;letter-spacing:2px;}
+.fc-body{padding:12px 16px;}
+.fc-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(26,58,92,.5);font-size:12px;}
+.fc-row:last-child{border-bottom:none;}
+.lbl{color:var(--dim);font-family:var(--mono);font-size:10px;}
+.val{font-family:var(--mono);font-weight:600;}
+.val.red{color:var(--red);}.val.blue{color:var(--blue);}.val.green{color:var(--green);}.val.orange{color:var(--orange);}
+.bar{height:3px;background:rgba(26,58,92,.5);border-radius:2px;margin-top:10px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
+.skel{background:linear-gradient(90deg,var(--surface2) 25%,rgba(26,58,92,.4) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:3px;color:transparent !important;min-width:60px;display:inline-block;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+footer{margin-top:20px;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10px;color:var(--dim);flex-wrap:wrap;gap:8px;}
+footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
+.lang-toggle{display:flex;gap:4px;align-items:center;}
+.lang-btn{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;letter-spacing:1.5px;transition:all .2s;}
+.lang-btn.active{background:var(--blue);border-color:var(--blue);color:#000;font-weight:600;}
+.lang-btn:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+
+/* EKONOMIK GOSTERGELER */
+.econ-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;}
+.econ-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:border-color .3s;}
+.econ-card:hover{border-color:var(--blue);}
+.econ-icon{font-size:22px;flex-shrink:0;}
+.econ-body{flex:1;}
+.econ-label{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.econ-value{font-family:var(--display);font-size:28px;line-height:1;}
+.econ-card.up .econ-value{color:var(--red);}
+.econ-card.down .econ-value{color:var(--green);}
+.econ-card.neutral .econ-value{color:var(--orange);}
+.econ-change{font-family:var(--mono);font-size:10px;margin-top:3px;}
+.econ-card.up .econ-change{color:var(--red);}
+.econ-card.down .econ-change{color:var(--green);}
+.econ-card.neutral .econ-change{color:var(--orange);}
+
+/* ZAMAN CIZELGESI */
+.timeline-wrap{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:20px;}
+.timeline-scroll{overflow-x:auto;padding:20px 20px 16px;}
+.timeline-scroll::-webkit-scrollbar{height:4px;}
+.timeline-scroll::-webkit-scrollbar-thumb{background:var(--border);}
+.timeline-track{display:flex;align-items:flex-start;gap:0;min-width:max-content;position:relative;padding-top:10px;}
+.timeline-track::before{content:'';position:absolute;top:26px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--orange),var(--blue));opacity:.4;}
+.tl-item{display:flex;flex-direction:column;align-items:center;width:160px;flex-shrink:0;cursor:pointer;}
+.tl-dot{width:14px;height:14px;border-radius:50%;border:2px solid;margin-bottom:10px;position:relative;z-index:1;transition:transform .2s;}
+.tl-item:hover .tl-dot{transform:scale(1.5);}
+.tl-item.critical .tl-dot{background:var(--red);border-color:var(--red);box-shadow:0 0 8px var(--red);}
+.tl-item.warning .tl-dot{background:var(--orange);border-color:var(--orange);box-shadow:0 0 8px var(--orange);}
+.tl-item.info .tl-dot{background:var(--blue);border-color:var(--blue);box-shadow:0 0 8px var(--blue);}
+.tl-date{font-family:var(--mono);font-size:9px;color:var(--dim);margin-bottom:4px;letter-spacing:1px;}
+.tl-text{font-size:10px;color:var(--text);text-align:center;line-height:1.4;padding:0 8px;}
+.tl-tooltip{position:fixed;background:var(--surface2);border:1px solid var(--blue);border-radius:4px;padding:10px 14px;font-size:11px;font-family:var(--mono);color:var(--text);pointer-events:none;opacity:0;transition:opacity .2s;z-index:1000;max-width:260px;line-height:1.6;}
+
+/* ── MOBİL UYUMLULUK ── */
+@media(max-width:600px){
+  .wrap{padding:10px;}
+  h1{font-size:20px;letter-spacing:1px;}
+  .hdr-r{gap:6px;}
+  .live-badge{font-size:9px;padding:2px 7px;}
+  .lang-btn{font-size:10px;padding:3px 8px;}
+  #clock{font-size:10px;}
+  #banner{font-size:10px;padding:8px 10px;}
+  #status-bar{font-size:10px;padding:6px 10px;}
+
+  /* Stats: 2 kolonlu grid */
+  .stats{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .sc{padding:10px 12px;}
+  .sc-val{font-size:26px;}
+  .sc-label{font-size:9px;}
+  .sc-sub{font-size:10px;}
+
+  /* Harita tam genişlik */
+  .main{grid-template-columns:1fr;gap:10px;}
+  .map-area{height:260px;}
+
+  /* Feed */
+  .feed-scroll{max-height:300px;}
+  .fi{padding:8px 10px;}
+  .fi-text{font-size:11px;}
+
+  /* Faction kartları: tek kolon */
+  .factions{grid-template-columns:1fr;gap:10px;}
+  .fc-name{font-size:17px;}
+
+  /* Ekonomik göstergeler: 2 kolon */
+  .econ-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .econ-card{padding:10px 12px;}
+  .econ-value{font-size:22px;}
+  .econ-label{font-size:9px;}
+  .econ-change{font-size:9px;}
+
+  /* Timeline */
+  .tl-item{width:120px;}
+  .tl-text{font-size:9px;}
+  .tl-date{font-size:8px;}
+
+  /* Footer */
+  footer{flex-direction:column;align-items:flex-start;gap:6px;}
+}
+
+@media(max-width:400px){
+  .stats{grid-template-columns:1fr 1fr;}
+  .sc-val{font-size:22px;}
+  .econ-grid{grid-template-columns:1fr 1fr;}
+  h1{font-size:17px;}
+}
+
+/* Touch cihazlar için tooltip yerine tıklama */
+@media(hover:none){
+  .strike-pt{-webkit-tap-highlight-color:transparent;}
+  .tl-item{-webkit-tap-highlight-color:transparent;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo"><div class="dot"></div><h1>ORTA DOĞU <span>SAVAŞ</span> TAKİP</h1></div>
+  <div class="hdr-r">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-tr" onclick="setLang('tr')">TR</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+      <div class="live-badge" id="live-badge">● CANLI TAKİP</div>
+    </div>
+    <div id="clock">--:-- UTC</div>
+  </div>
+</header>
+<div id="banner">⏳ Yükleniyor...</div>
+<div id="status-bar" class="s-load">⏳ Claude AI haber kaynaklarını tarıyor, lütfen bekleyin (10-20 sn)...</div>
+<div class="stats">
+  <div class="sc red"><div class="sc-label">İRAN'DA ÖLÜM</div><div class="sc-val" id="s-iran-cas"><span class="skel">——</span></div><div class="sc-sub" id="s-iran-src">yükleniyor...</div></div>
+  <div class="sc orange"><div class="sc-label">ABD-İSRAİL SALDIRISI</div><div class="sc-val" id="s-strikes"><span class="skel">——</span></div><div class="sc-sub">Hedef vuruldu</div></div>
+  <div class="sc orange"><div class="sc-label">LÜBNAN ÖLÜM</div><div class="sc-val" id="s-lebanon"><span class="skel">——</span></div><div class="sc-sub">İsrail saldırıları</div></div>
+  <div class="sc green"><div class="sc-label">SAVAŞ MALİYETİ</div><div class="sc-val" id="s-cost"><span class="skel">——</span></div><div class="sc-sub">Toplam tahmini</div></div>
+  <div class="sc blue"><div class="sc-label">SAVAŞIN GÜNÜ</div><div class="sc-val" id="s-day"><span class="skel">——</span></div><div class="sc-sub">28 Şubat'tan itibaren</div></div>
+  <div class="sc red"><div class="sc-label">YERİNDEN EDİLEN</div><div class="sc-val" id="s-displaced"><span class="skel">——</span></div><div class="sc-sub">Sivil</div></div>
+</div>
+<div class="main">
+  <div class="map-panel">
+    <div class="panel-hdr"><span data-key="map-title">▶ SALDIRI HARİTASI</span><span data-key="map-hint">Noktalara tıklayın</span></div>
+    <div class="map-area">
+      <svg class="map-svg" viewBox="0 0 700 420" xmlns="http://www.w3.org/2000/svg">
+        <rect width="700" height="420" fill="#071520"/>
+        <path d="M 100 60 L 280 60 L 310 90 L 290 110 L 220 115 L 170 105 L 110 90 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 220 115 L 290 110 L 295 160 L 255 165 L 230 155 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 230 155 L 255 165 L 252 190 L 238 195 L 228 175 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 255 165 L 290 165 L 295 200 L 265 210 L 252 190 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 290 110 L 380 100 L 395 160 L 380 200 L 320 210 L 295 200 L 290 165 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 380 100 L 520 80 L 555 110 L 560 180 L 530 240 L 480 260 L 430 250 L 395 210 L 380 200 L 395 160 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 265 210 L 380 200 L 430 250 L 440 330 L 390 360 L 290 350 L 250 300 L 240 240 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 380 200 L 410 200 L 415 220 L 390 225 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 440 250 L 490 255 L 500 290 L 470 300 L 445 280 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 290 350 L 390 360 L 420 385 L 310 390 L 270 375 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <path d="M 140 180 L 230 155 L 228 175 L 238 195 L 200 240 L 140 250 Z" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <ellipse cx="185" cy="130" rx="18" ry="10" fill="#0d2035" stroke="#1a3a5c" stroke-width=".8"/>
+        <text x="185" y="80" fill="#2a5070" font-size="10" font-family="Share Tech Mono" text-anchor="middle">TURKIYE</text>
+        <text x="260" y="140" fill="#2a5070" font-size="8" font-family="Share Tech Mono" text-anchor="middle">SURIYE</text>
+        <text x="240" y="188" fill="#2a5070" font-size="7" font-family="Share Tech Mono" text-anchor="middle">ISRAEL</text>
+        <text x="335" y="165" fill="#2a5070" font-size="9" font-family="Share Tech Mono" text-anchor="middle">IRAK</text>
+        <text x="465" y="178" fill="#2a5070" font-size="11" font-family="Share Tech Mono" text-anchor="middle">IRAN</text>
+        <text x="340" y="290" fill="#2a5070" font-size="9" font-family="Share Tech Mono" text-anchor="middle">SAUDI ARABIA</text>
+        <text x="465" y="278" fill="#2a5070" font-size="7" font-family="Share Tech Mono" text-anchor="middle">UAE</text>
+        <text x="175" y="215" fill="#2a5070" font-size="8" font-family="Share Tech Mono" text-anchor="middle">MISIR</text>
+        <text x="435" y="233" fill="#0a2540" font-size="8" font-family="Share Tech Mono" text-anchor="middle" transform="rotate(-20,435,233)">KORFEZ</text>
+        <path d="M 460 160 Q 350 80 240 178" stroke="#ff4444" stroke-width="1.5" fill="none" class="trail" opacity=".5"/>
+        <path d="M 238 178 Q 360 100 468 155" stroke="#00ccff" stroke-width="1.5" fill="none" class="trail" opacity=".4"/>
+        <path d="M 450 200 Q 445 230 435 248" stroke="#ff8800" stroke-width="1" fill="none" class="trail" opacity=".4"/>
+        <path d="M 450 210 Q 460 240 472 268" stroke="#ff8800" stroke-width="1" fill="none" class="trail" opacity=".4"/>
+        <g id="map-points"></g>
+        <rect x="10" y="360" width="200" height="52" fill="rgba(5,10,15,.85)" rx="3"/>
+        <circle cx="25" cy="374" r="4" fill="#ff4444"/><text x="35" y="378" fill="#aaa" font-size="9" font-family="Share Tech Mono">Iran saldirisi / ABD-Israel vurumu</text>
+        <circle cx="25" cy="391" r="4" fill="#ff8800"/><text x="35" y="395" fill="#aaa" font-size="9" font-family="Share Tech Mono">Iran IHA/fuzе saldirisi</text>
+        <circle cx="25" cy="406" r="4" fill="#00ccff"/><text x="35" y="410" fill="#aaa" font-size="9" font-family="Share Tech Mono">ABD-Israel hava saldirisi</text>
+      </svg>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+  </div>
+  <div class="feed-panel">
+    <div class="panel-hdr"><span data-key="feed-title">▶ CANLI HABERLER</span><span id="feed-count">yükleniyor</span></div>
+    <div class="feed-scroll" id="feed">
+      <div class="fi info"><div class="fi-time">—</div><div class="fi-text"><span class="skel">Haberler yükleniyor...</span></div></div>
+    </div>
+  </div>
+</div>
+<div class="factions">
+  <div class="fc">
+    <div class="fc-hdr" style="background:rgba(0,204,255,.08);border-color:rgba(0,204,255,.2)">
+      <svg width="32" height="20" viewBox="0 0 32 20"><rect width="32" height="7" fill="#fff"/><rect y="6" width="32" height="8" fill="#0038b8"/><rect y="13" width="32" height="7" fill="#fff"/></svg>
+      <div class="fc-name" style="color:#00ccff">İSRAİL</div>
+    </div>
+    <div class="fc-body" data-faction="israel">
+      <div class="fc-row"><span class="lbl">OPERASYON</span><span class="val blue" id="f-il-op"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">DURUM</span><span class="val red" id="f-il-status"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">UÇAK</span><span class="val" id="f-il-air"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">REZERV</span><span class="val orange" id="f-il-res"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">KAYIP</span><span class="val red" id="f-il-cas"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">HAVA SAVUNMA</span><span class="val green" id="f-il-hiz"><span class="skel">——</span></span></div>
+      <div class="bar"><div class="bar-fill" id="f-il-bar" style="width:0%;background:#00ccff"></div></div>
+    </div>
+  </div>
+  <div class="fc">
+    <div class="fc-hdr" style="background:rgba(255,68,68,.08);border-color:rgba(255,68,68,.2)">
+      <svg width="32" height="20" viewBox="0 0 32 20"><rect width="32" height="7" fill="#239f40"/><rect y="6" width="32" height="8" fill="#fff"/><rect y="13" width="32" height="7" fill="#c8102e"/></svg>
+      <div class="fc-name" style="color:#ff4444">İRAN</div>
+    </div>
+    <div class="fc-body" data-faction="iran">
+      <div class="fc-row"><span class="lbl">BALİSTİK FÜZE</span><span class="val red" id="f-ir-bal"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">İHA SALDIRISI</span><span class="val red" id="f-ir-uav"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">DONANMA</span><span class="val red" id="f-ir-nav"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">HAVA KUVVETLERİ</span><span class="val red" id="f-ir-af"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">KAYIP</span><span class="val red" id="f-ir-cas"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">HÜRMÜZ BOĞAZI</span><span class="val orange" id="f-ir-hor"><span class="skel">——</span></span></div>
+      <div class="bar"><div class="bar-fill" id="f-ir-bar" style="width:0%;background:#ff4444"></div></div>
+    </div>
+  </div>
+  <div class="fc">
+    <div class="fc-hdr" style="background:rgba(0,255,136,.06);border-color:rgba(0,255,136,.2)">
+      <svg width="32" height="20" viewBox="0 0 32 20"><rect width="32" height="20" fill="#b22234"/><rect y="2" width="32" height="2" fill="#fff"/><rect y="6" width="32" height="2" fill="#fff"/><rect y="10" width="32" height="2" fill="#fff"/><rect y="14" width="32" height="2" fill="#fff"/><rect y="18" width="32" height="2" fill="#fff"/><rect width="14" height="10" fill="#3c3b6e"/></svg>
+      <div class="fc-name" style="color:#00ff88">ABD</div>
+    </div>
+    <div class="fc-body" data-faction="usa">
+      <div class="fc-row"><span class="lbl">HEDEF VURULDU</span><span class="val green" id="f-us-tgt"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">GEMİ İMHASI</span><span class="val green" id="f-us-ship"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">ABD KAYBI</span><span class="val red" id="f-us-cas"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">MALİYET/GÜN</span><span class="val orange" id="f-us-cost"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">SÜRE TAHMİNİ</span><span class="val" id="f-us-time"><span class="skel">——</span></span></div>
+      <div class="fc-row"><span class="lbl">TRUMP TALEBİ</span><span class="val orange" id="f-us-dem"><span class="skel">——</span></span></div>
+      <div class="bar"><div class="bar-fill" id="f-us-bar" style="width:0%;background:#00ff88"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- EKONOMIK GOSTERGELER -->
+<div class="panel-hdr" style="border-radius:4px 4px 0 0;margin-bottom:0" id="econ-header">
+  <span data-key="econ-title">▶ EKONOMİK GÖSTERGELER</span>
+  <span id="econ-update" style="font-size:10px;color:var(--dim)">yükleniyor</span>
+</div>
+<div class="econ-grid" style="margin-top:0;border:1px solid var(--border);border-top:none;border-radius:0 0 4px 4px;padding:12px;background:var(--surface);margin-bottom:20px;">
+  <div class="econ-card up" id="ec-brent">
+    <div class="econ-icon">🛢️</div>
+    <div class="econ-body">
+      <div class="econ-label" id="ec-brent-lbl">BRENT HAM PETROL</div>
+      <div class="econ-value" id="ec-brent-val"><span class="skel">——</span></div>
+      <div class="econ-change" id="ec-brent-chg">yükleniyor...</div>
+    </div>
+  </div>
+  <div class="econ-card up" id="ec-wti">
+    <div class="econ-icon">⛽</div>
+    <div class="econ-body">
+      <div class="econ-label" id="ec-wti-lbl">WTI HAM PETROL</div>
+      <div class="econ-value" id="ec-wti-val"><span class="skel">——</span></div>
+      <div class="econ-change" id="ec-wti-chg">yükleniyor...</div>
+    </div>
+  </div>
+  <div class="econ-card neutral" id="ec-usd">
+    <div class="econ-icon">💵</div>
+    <div class="econ-body">
+      <div class="econ-label" id="ec-usd-lbl">DOLAR/TL</div>
+      <div class="econ-value" id="ec-usd-val"><span class="skel">——</span></div>
+      <div class="econ-change" id="ec-usd-chg">yükleniyor...</div>
+    </div>
+  </div>
+  <div class="econ-card neutral" id="ec-gold">
+    <div class="econ-icon">🥇</div>
+    <div class="econ-body">
+      <div class="econ-label" id="ec-gold-lbl">ALTIN ($/oz)</div>
+      <div class="econ-value" id="ec-gold-val"><span class="skel">——</span></div>
+      <div class="econ-change" id="ec-gold-chg">yükleniyor...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ZAMAN CIZELGESI -->
+<div class="timeline-wrap">
+  <div class="panel-hdr"><span data-key="tl-title">▶ SAVAŞ ZEMANELİ</span><span style="font-size:10px">◄ kaydır ►</span></div>
+  <div class="timeline-scroll">
+    <div class="timeline-track" id="timeline"></div>
+  </div>
+</div>
+<div class="tl-tooltip" id="tl-tooltip"></div>
+<footer>
+  <div>KAYNAKLAR: <a href="https://www.aljazeera.com" target="_blank">Al Jazeera</a><a href="https://www.cnn.com" target="_blank">CNN</a><a href="https://www.npr.org" target="_blank">NPR</a><a href="https://en.wikipedia.org/wiki/2026_Iran_war" target="_blank">Wikipedia</a></div>
+  <div id="footer-ts">Son güncelleme: —</div>
+</footer>
+</div>
+<script>
+// ── LANGUAGE SYSTEM ──
+let LANG = 'tr'; // no localStorage in artifacts
+
+const T = {
+  tr: {
+    title: 'ORTA DOĞU <span>SAVAŞ</span> TAKİP',
+    live: '● CANLI TAKİP',
+    updating: '⏳ Claude AI haber kaynaklarını tarıyor...',
+    ok: (t) => `✓ Tüm veriler güncellendi — ${t} — Kaynak: Web araması (Claude AI)`,
+    err: '⚠ Canlı veri alınamadı — Son bilinen veriler gösteriliyor (7 Mart 2026)',
+    map_title: '▶ SALDIRI HARİTASI', map_hint: 'Noktalara tıklayın',
+    feed_title: '▶ CANLI HABERLER', events: (n) => n + ' olay',
+    last_update: (d) => 'Son güncelleme: ' + d,
+    stat_labels: ["İRAN'DA ÖLÜM",'ABD-İSRAİL SALDIRISI','LÜBNAN ÖLÜM','SAVAŞ MALİYETİ','SAVAŞIN GÜNÜ','YERİNDEN EDİLEN'],
+    faction_labels: {
+      israel: ['OPERASYON','DURUM','UÇAK','REZERV','KAYIP','HAVA SAVUNMA'],
+      iran:   ['BALİSTİK FÜZE','İHA SALDIRISI','DONANMA','HAVA KUVVETLERİ','KAYIP','HÜRMÜZ BOĞAZI'],
+      usa:    ['HEDEF VURULDU','GEMİ İMHASI','ABD KAYBI','MALİYET/GÜN','SÜRE TAHMİNİ','TRUMP TALEBİ'],
+    },
+    day_suffix: '. GÜN', source_prefix: 'Kaynak: ',
+    ai_update: '🤖 AI GÜNCELLEMESİ — ',
+    tag_labels: {iran:'İRAN',israel:'İSRAİL',usa:'ABD',gulf:'KÖRFEZ',intercept:'ÖNLEME'},
+    econ_title: '▶ EKONOMİK GÖSTERGELER', tl_title: '▶ SAVAŞ ZAMANELİ',
+    econ_labels: ['BRENT HAM PETROL','WTI HAM PETROL','DOLAR/TL','ALTIN ($/oz)'],
+  },
+  en: {
+    title: 'MIDDLE EAST <span>WAR</span> TRACKER',
+    live: '● LIVE TRACKING',
+    updating: '⏳ Claude AI scanning news sources...',
+    ok: (t) => `✓ All data updated — ${t} — Source: Web search (Claude AI)`,
+    err: '⚠ Live data unavailable — Showing last known data (March 7, 2026)',
+    map_title: '▶ STRIKE MAP', map_hint: 'Click on points',
+    feed_title: '▶ LIVE FEED', events: (n) => n + ' events',
+    last_update: (d) => 'Last updated: ' + d,
+    stat_labels: ['IRAN CASUALTIES','US-ISRAEL STRIKES','LEBANON CASUALTIES','WAR COST','DAY OF WAR','DISPLACED'],
+    faction_labels: {
+      israel: ['OPERATION','STATUS','AIRCRAFT','RESERVES','CASUALTIES','AIR DEFENSE'],
+      iran:   ['BALLISTIC MISSILES','DRONE ATTACKS','NAVY','AIR FORCE','CASUALTIES','STRAIT OF HORMUZ'],
+      usa:    ['TARGETS HIT','SHIPS DESTROYED','US CASUALTIES','COST/DAY','TIMELINE',"TRUMP'S DEMAND"],
+    },
+    day_suffix: ' DAYS', source_prefix: 'Source: ',
+    ai_update: '🤖 AI UPDATE — ',
+    tag_labels: {iran:'IRAN',israel:'ISRAEL',usa:'USA',gulf:'GULF',intercept:'INTERCEPT'},
+    econ_title: '▶ ECONOMIC INDICATORS', tl_title: '▶ WAR TIMELINE',
+    econ_labels: ['BRENT CRUDE OIL','WTI CRUDE OIL','USD/TRY','GOLD ($/oz)'],
+  }
+};
+
+// ── FALLBACK DATA ──
+const FALLBACK = {
+  tr: {
+    banner: "OPERASYON EPİK ÖFKE — 8. GÜN — ABD-İSRAİL İRAN'A HAVA SALDIRISI — MİSİLLEMELER DEVAM EDİYOR",
+    meta: {day_count:8, last_updated:'7 Mart 2026'},
+    stats: {iran_casualties:'1,332+', iran_casualties_source:'İran Kızılay', us_israel_strikes:'3,000+', lebanon_casualties:'200+', war_cost_usd:'$3.7B', displaced_civilians:'95,000+'},
+    feed: [
+      {time:'07 MAR 06:12',type:'critical',tags:['iran','israel'],text:"İran'ın Devrim Muhafızları, Tel Aviv'e kombine İHA ve füze saldırısı başlattı."},
+      {time:'07 MAR 05:44',type:'critical',tags:['usa','israel'],text:"İsrail 80+ savaş uçağıyla Tahran'a geniş çaplı saldırı başlattı. Mehrabad Havalimanı hedef alındı."},
+      {time:'07 MAR 04:31',type:'warning',tags:['gulf'],text:"Suudi Arabistan, Shaybah petrol sahasına yönelik 16 İran İHA'sını önledi."},
+      {time:'07 MAR 02:10',type:'critical',tags:['iran'],text:"İran'daki ölü sayısı 1.332'ye yükseldi. Okullar ve hastaneler de hedef alındı."},
+      {time:'05 MAR 09:00',type:'critical',tags:['usa','iran'],text:"ABD denizaltısı Iris Dena'yı Hint Okyanusu'nda batırdı."},
+      {time:'03 MAR 14:20',type:'warning',tags:['israel'],text:"İsrail Beyrut güneyini bombaladı, Hizbullah mevzileri hedef alındı."},
+    ],
+    factions: {
+      israel: {operation:'Epik Öfke',status:'DEVAM EDİYOR',aircraft:'80+ F-35/F-16',reserves:'70,000',casualties:'10+',hezbollah:'AKTİF / IRON DOME',strength_pct:82},
+      iran:   {ballistic_reduction:'-%90',drone_reduction:'-%83',navy_status:'İmha edildi',airforce_status:'İmha edildi',casualties:'1,332+',hormuz:'Tehdit altında',strength_pct:18},
+      usa:    {targets_hit:'3,000+',ships_destroyed:'43',us_casualties:'6 asker',cost_per_day:'$891M',timeline:'4-6 hafta',demand:'Koşulsuz teslim',strength_pct:90}
+    },
+    map_points: [
+      {id:'tehran',label:'Tahran',tooltip:'Tahran: ABD-İsrail hava saldırıları. Mehrabad Havalimanı hedef alındı.',type:'strike_us_israel'},
+      {id:'isfahan',label:'İsfahan',tooltip:'İsfahan: Askeri altyapı vuruldu.',type:'strike_us_israel'},
+      {id:'tel_aviv',label:'Tel Aviv',tooltip:'Tel Aviv: İran balistik füze saldırıları.',type:'strike_iran'},
+      {id:'beirut',label:'Beyrut',tooltip:"Beyrut: İsrail Hizbullah bölgesini vurdu. 200+ ölü.",type:'strike_us_israel'},
+      {id:'kuwait',label:'Kuveyt',tooltip:'Kuveyt: ABD komuta merkezi vuruldu.',type:'strike_iran'},
+      {id:'dubai',label:'Dubai',tooltip:'Dubai: Havalimanı İHA saldırısına maruz kaldı.',type:'strike_iran'},
+    ]
+  },
+  en: {
+    banner: "OPERATION EPIC FURY — DAY 8 — US-ISRAEL STRIKES ON IRAN — IRANIAN RETALIATION ONGOING",
+    meta: {day_count:8, last_updated:'March 7, 2026'},
+    stats: {iran_casualties:'1,332+', iran_casualties_source:'Iranian Red Crescent', us_israel_strikes:'3,000+', lebanon_casualties:'200+', war_cost_usd:'$3.7B', displaced_civilians:'95,000+'},
+    feed: [
+      {time:'07 MAR 06:12',type:'critical',tags:['iran','israel'],text:"Iran's Revolutionary Guard launched combined drone and missile attack on Tel Aviv."},
+      {time:'07 MAR 05:44',type:'critical',tags:['usa','israel'],text:"Israel launched broad-scale strikes on Tehran with 80+ fighter jets. Mehrabad Airport targeted."},
+      {time:'07 MAR 04:31',type:'warning',tags:['gulf'],text:"Saudi Arabia intercepted 16 Iranian drones headed toward Shaybah oil field."},
+      {time:'07 MAR 02:10',type:'critical',tags:['iran'],text:"Death toll in Iran rises to 1,332+. Schools and hospitals reportedly struck."},
+      {time:'05 MAR 09:00',type:'critical',tags:['usa','iran'],text:"US submarine sank Iranian frigate Iris Dena in the Indian Ocean."},
+      {time:'03 MAR 14:20',type:'warning',tags:['israel'],text:"Israel bombed southern Beirut, targeting Hezbollah positions."},
+    ],
+    factions: {
+      israel: {operation:'Epic Fury',status:'ONGOING',aircraft:'80+ F-35/F-16',reserves:'70,000',casualties:'10+',hezbollah:'ACTIVE / IRON DOME',strength_pct:82},
+      iran:   {ballistic_reduction:'-90%',drone_reduction:'-83%',navy_status:'Destroyed',airforce_status:'Destroyed',casualties:'1,332+',hormuz:'Under threat',strength_pct:18},
+      usa:    {targets_hit:'3,000+',ships_destroyed:'43',us_casualties:'6 soldiers',cost_per_day:'$891M',timeline:'4-6 weeks',demand:'Unconditional surrender',strength_pct:90}
+    },
+    map_points: [
+      {id:'tehran',label:'Tehran',tooltip:'Tehran: US-Israel airstrikes. Mehrabad Airport targeted.',type:'strike_us_israel'},
+      {id:'isfahan',label:'Isfahan',tooltip:'Isfahan: Military infrastructure struck.',type:'strike_us_israel'},
+      {id:'tel_aviv',label:'Tel Aviv',tooltip:'Tel Aviv: Iranian ballistic missile attacks.',type:'strike_iran'},
+      {id:'beirut',label:'Beirut',tooltip:"Beirut: Israel struck Hezbollah district. 200+ killed.",type:'strike_us_israel'},
+      {id:'kuwait',label:'Kuwait',tooltip:'Kuwait: US command center struck.',type:'strike_iran'},
+      {id:'dubai',label:'Dubai',tooltip:'Dubai: Airport targeted by drone attacks.',type:'strike_iran'},
+    ]
+  }
+};
+
+const ECON_FALLBACK = {
+  tr: {
+    brent: {val:'$90.4', chg:'↑ +18.2% (savaş etkisi)', dir:'up'},
+    wti:   {val:'$87.1', chg:'↑ +16.8% (savaş etkisi)', dir:'up'},
+    usd:   {val:'₺38.2', chg:'↑ +2.1% bu hafta',        dir:'up'},
+    gold:  {val:'$3,140',chg:'↑ +4.3% (güvenli liman)', dir:'up'},
+  },
+  en: {
+    brent: {val:'$90.4', chg:'↑ +18.2% (war impact)',  dir:'up'},
+    wti:   {val:'$87.1', chg:'↑ +16.8% (war impact)',  dir:'up'},
+    usd:   {val:'₺38.2', chg:'↑ +2.1% this week',      dir:'up'},
+    gold:  {val:'$3,140',chg:'↑ +4.3% (safe haven)',   dir:'up'},
+  }
+};
+
+const TIMELINE = {
+  tr: [
+    {date:'28 ŞUB',type:'critical',short:'Savaş başladı',      detail:"ABD ve İsrail İran'a ortak hava saldırıları başlattı. Tahran, İsfahan ve Kum hedef alındı."},
+    {date:'28 ŞUB',type:'critical',short:'Hamaney öldürüldü',  detail:'Hava saldırısında Yüksek Lider Ali Hamaney ve onlarca üst düzey yetkili hayatını kaybetti.'},
+    {date:'1 MAR', type:'warning', short:'İran misilleme',      detail:"İran, İsrail ve ABD üslerine balistik füze ve İHA saldırısı başlattı."},
+    {date:'2 MAR', type:'critical',short:'Tahran vuruldu',      detail:'IRGC binası tamamen yıkıldı. İran devlet yayıncısı IRIB hedef alındı.'},
+    {date:'3 MAR', type:'warning', short:'Lübnan cephesi',      detail:"Hizbullah İsrail'e roket saldırısı başlattı. İsrail Beyrut'un güneyini bombaladı."},
+    {date:'4 MAR', type:'info',    short:'BM acil toplantı',    detail:"BM Güvenlik Konseyi acil toplandı. İran ABD ve İsrail'i savaş suçuyla itham etti."},
+    {date:'5 MAR', type:'critical',short:'İran fırkateyni battı',detail:"ABD denizaltısı Hint Okyanusu'nda İran fırkateyni Iris Dena'yı batırdı."},
+    {date:'6 MAR', type:'critical',short:'Kıbrıs vuruldu',     detail:"İngiliz RAF üssü İran İHA'sı tarafından vuruldu."},
+    {date:'7 MAR', type:'warning', short:'8. gün',              detail:"Saldırılar sürüyor. İran'da 1.332+ sivil hayatını kaybetti."},
+  ],
+  en: [
+    {date:'FEB 28',type:'critical',short:'War begins',         detail:'US and Israel launch joint airstrikes on Iran targeting Tehran, Isfahan and Qom.'},
+    {date:'FEB 28',type:'critical',short:'Khamenei killed',    detail:'Supreme Leader Ali Khamenei killed in airstrike on Tehran.'},
+    {date:'MAR 1', type:'warning', short:'Iran retaliates',    detail:'Iran launches ballistic missiles and drones at Israel, US bases and Gulf states.'},
+    {date:'MAR 2', type:'critical',short:'Tehran struck',      detail:'IRGC building destroyed. State broadcaster IRIB headquarters hit.'},
+    {date:'MAR 3', type:'warning', short:'Lebanon front',      detail:'Hezbollah fires rockets at Israel. Israel strikes southern Beirut.'},
+    {date:'MAR 4', type:'info',    short:'UN emergency',       detail:'UN Security Council holds emergency session. Iran accuses US and Israel of war crimes.'},
+    {date:'MAR 5', type:'critical',short:'Iranian frigate sunk',detail:'US submarine sinks Iranian frigate Iris Dena in Indian Ocean.'},
+    {date:'MAR 6', type:'critical',short:'Cyprus hit',         detail:'British RAF base struck by Iranian drone.'},
+    {date:'MAR 7', type:'warning', short:'Day 8',              detail:'Strikes continue. 1,332+ civilians killed in Iran.'},
+  ]
+};
+
+// ── CLOCK ──
+function tick(){document.getElementById('clock').textContent=new Date().toUTCString().slice(17,25)+' UTC';}
+tick(); setInterval(tick,1000);
+
+// ── MAP ──
+const COORDS={tehran:{cx:470,cy:155},isfahan:{cx:455,cy:195},bushehr:{cx:430,cy:220},tel_aviv:{cx:238,cy:178},beirut:{cx:243,cy:158},kuwait:{cx:395,cy:210},bahrain:{cx:432,cy:248},dubai:{cx:472,cy:268},cyprus:{cx:185,cy:130},baghdad:{cx:330,cy:155}};
+const DEFAULT={cx:470,cy:160};
+const TYPE_COL={strike_us_israel:'#00ccff',strike_iran:'#ff4444',intercept:'#00ff88',default:'#ff8800'};
+const TAG_CLS={iran:'t-iran',israel:'t-israel',usa:'t-usa',gulf:'t-gulf',intercept:'t-intercept'};
+
+function getCoords(id){
+  const k=(id||'').toLowerCase().replace(/[^a-z]/g,'_').replace(/__+/g,'_').replace(/^_|_$/g,'');
+  return COORDS[k]||DEFAULT;
+}
+
+function renderMap(pts){
+  const g=document.getElementById('map-points'); g.innerHTML='';
+  if(!pts||!pts.length) return;
+  pts.forEach((p,i)=>{
+    const{cx,cy}=getCoords(p.id||p.label||'');
+    const col=TYPE_COL[p.type]||TYPE_COL.default;
+    const el=document.createElementNS('http://www.w3.org/2000/svg','g');
+    el.setAttribute('class','strike-pt');
+    el.setAttribute('data-tip',p.tooltip||p.label||'');
+    el.innerHTML=`<circle cx="${cx}" cy="${cy}" r="9" fill="${col}22" stroke="${col}" stroke-width="1"/><circle class="ring" cx="${cx}" cy="${cy}" r="5" fill="none" stroke="${col}" stroke-width="1.5" style="animation-delay:${(i*0.3)%2}s"/><circle cx="${cx}" cy="${cy}" r="4" fill="${col}"/><text x="${cx}" y="${cy-12}" fill="${col}" font-size="7" font-family="Share Tech Mono" text-anchor="middle">${(p.label||'').toUpperCase()}</text>`;
+    g.appendChild(el);
+  });
+  const tt=document.getElementById('tooltip');
+  g.querySelectorAll('.strike-pt').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{tt.textContent=el.dataset.tip;tt.style.opacity='1';});
+    el.addEventListener('mousemove',e=>{
+      const r=e.currentTarget.closest('.map-area').getBoundingClientRect();
+      let x=e.clientX-r.left+10,y=e.clientY-r.top-30;
+      if(x+220>r.width)x-=230;
+      tt.style.left=x+'px';tt.style.top=y+'px';
+    });
+    el.addEventListener('mouseleave',()=>{tt.style.opacity='0';});
+  });
+}
+
+// ── FEED ──
+function renderFeed(items,prepend){
+  const tl=T[LANG];
+  const feed=document.getElementById('feed');
+  if(!prepend) feed.innerHTML='';
+  items.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='fi '+(item.type||'info');
+    div.style.animationDelay=(prepend?0:i*0.07)+'s';
+    const tags=(item.tags||[]).map(t=>`<span class="tag ${TAG_CLS[t]||'t-iran'}">${tl.tag_labels[t]||t}</span>`).join('');
+    div.innerHTML=`<div class="fi-time">${item.time||''}</div><div class="fi-text">${tags}${item.text||''}</div>`;
+    prepend?feed.prepend(div):feed.appendChild(div);
+  });
+  document.getElementById('feed-count').textContent=tl.events(feed.children.length);
+}
+
+// ── ECON ──
+function renderEcon(data){
+  const tl=T[LANG];
+  const e=data||(ECON_FALLBACK[LANG]);
+  ['brent','wti','usd','gold'].forEach((k,i)=>{
+    const d=e[k]; if(!d) return;
+    const card=document.getElementById('ec-'+k);
+    const val=document.getElementById('ec-'+k+'-val');
+    const chg=document.getElementById('ec-'+k+'-chg');
+    const lbl=document.getElementById('ec-'+k+'-lbl');
+    if(val) val.textContent=d.val;
+    if(chg) chg.textContent=d.chg;
+    if(lbl) lbl.textContent=tl.econ_labels[i];
+    if(card) card.className='econ-card '+(d.dir||'neutral');
+  });
+  const upd=document.getElementById('econ-update');
+  if(upd) upd.textContent=LANG==='tr'?'Tahmin (savaş etkisi)':'Estimated (war impact)';
+}
+
+// ── TIMELINE ──
+function renderTimeline(){
+  const items=TIMELINE[LANG];
+  const track=document.getElementById('timeline');
+  if(!track) return;
+  track.innerHTML='';
+  const tt=document.getElementById('tl-tooltip');
+  items.forEach(item=>{
+    const el=document.createElement('div');
+    el.className='tl-item '+item.type;
+    el.innerHTML=`<div class="tl-date">${item.date}</div><div class="tl-dot"></div><div class="tl-text">${item.short}</div>`;
+    el.addEventListener('mouseenter',e=>{tt.textContent=item.detail;tt.style.opacity='1';});
+    el.addEventListener('mousemove',e=>{tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-40)+'px';});
+    el.addEventListener('mouseleave',()=>{tt.style.opacity='0';});
+    track.appendChild(el);
+  });
+}
+
+// ── APPLY DATA ──
+function set(id,val){const el=document.getElementById(id);if(el&&val!=null)el.innerHTML=val;}
+
+function applyData(d){
+  const tl=T[LANG];
+  if(d.banner) document.getElementById('banner').textContent='⚠ '+d.banner;
+  if(d.meta){
+    if(d.meta.day_count) set('s-day',d.meta.day_count+tl.day_suffix);
+    if(d.meta.last_updated) document.getElementById('footer-ts').textContent=tl.last_update(d.meta.last_updated);
+    if(!d.banner&&d.meta.war_status) document.getElementById('banner').textContent='⚠ '+d.meta.war_status;
+  }
+  if(d.stats){
+    const s=d.stats;
+    set('s-iran-cas',s.iran_casualties);
+    document.getElementById('s-iran-src').textContent=tl.source_prefix+(s.iran_casualties_source||(LANG==='tr'?'Haber kaynakları':'News sources'));
+    set('s-strikes',s.us_israel_strikes);
+    set('s-lebanon',s.lebanon_casualties);
+    set('s-cost',s.war_cost_usd);
+    set('s-displaced',s.displaced_civilians);
+  }
+  if(d.feed&&d.feed.length) renderFeed(d.feed,false);
+  if(d.map_points&&d.map_points.length) renderMap(d.map_points);
+  if(d.factions){
+    const{israel:il,iran:ir,usa:us}=d.factions;
+    if(il){set('f-il-op',il.operation);set('f-il-status',il.status);set('f-il-air',il.aircraft);set('f-il-res',il.reserves);set('f-il-cas',il.casualties);set('f-il-hiz',il.hezbollah);if(il.strength_pct)document.getElementById('f-il-bar').style.width=il.strength_pct+'%';}
+    if(ir){set('f-ir-bal',ir.ballistic_reduction);set('f-ir-uav',ir.drone_reduction);set('f-ir-nav',ir.navy_status);set('f-ir-af',ir.airforce_status);set('f-ir-cas',ir.casualties);set('f-ir-hor',ir.hormuz);if(ir.strength_pct)document.getElementById('f-ir-bar').style.width=ir.strength_pct+'%';}
+    if(us){set('f-us-tgt',us.targets_hit);set('f-us-ship',us.ships_destroyed);set('f-us-cas',us.us_casualties);set('f-us-cost',us.cost_per_day);set('f-us-time',us.timeline);set('f-us-dem',us.demand);if(us.strength_pct)document.getElementById('f-us-bar').style.width=us.strength_pct+'%';}
+  }
+}
+
+// ── TRANSLATE UI ──
+function applyUITranslation(){
+  const t=T[LANG];
+  document.querySelector('h1').innerHTML=t.title;
+  document.getElementById('live-badge').textContent=t.live;
+  document.querySelector('[data-key="map-title"]').textContent=t.map_title;
+  document.querySelector('[data-key="map-hint"]').textContent=t.map_hint;
+  document.querySelector('[data-key="feed-title"]').textContent=t.feed_title;
+  document.querySelector('[data-key="econ-title"]').textContent=t.econ_title;
+  document.querySelector('[data-key="tl-title"]').textContent=t.tl_title;
+  document.querySelectorAll('.sc-label').forEach((el,i)=>{if(t.stat_labels[i])el.textContent=t.stat_labels[i];});
+  ['israel','iran','usa'].forEach(faction=>{
+    document.querySelectorAll(`[data-faction="${faction}"] .lbl`).forEach((el,i)=>{
+      if(t.faction_labels[faction][i]) el.textContent=t.faction_labels[faction][i];
+    });
+  });
+}
+
+// ── SET LANG ──
+function setLang(lang){
+  LANG=lang;
+  document.getElementById('btn-tr').classList.toggle('active',lang==='tr');
+  document.getElementById('btn-en').classList.toggle('active',lang==='en');
+  applyUITranslation();
+  applyData(FALLBACK[LANG]);
+  renderEcon(null);
+  renderTimeline();
+  fetchData();
+}
+
+// ── FETCH ──
+async function fetchData(){
+  const tl=T[LANG];
+  const bar=document.getElementById('status-bar');
+  bar.className='s-load';
+  bar.textContent=tl.updating;
+  try{
+    const r=await fetch('/api/update?lang='+LANG);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const json=await r.json();
+    if(!json.success) throw new Error(json.error||'Server error');
+    applyData(json.data);
+    renderEcon(json.data.econ||null);
+    bar.className='s-ok';
+    bar.textContent=tl.ok(new Date().toLocaleTimeString(LANG==='tr'?'tr-TR':'en-US'));
+  }catch(e){
+    applyData(FALLBACK[LANG]);
+    renderEcon(null);
+    bar.className='s-err';
+    bar.textContent=tl.err;
+  }
+}
+
+// ── INIT ──
+applyUITranslation();
+applyData(FALLBACK[LANG]);
+renderEcon(null);
+renderTimeline();
+fetchData();
+setInterval(fetchData,5*60*1000);
+</script>
+</body>
+</html>
