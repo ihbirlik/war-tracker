@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   const KEY = process.env.ANTHROPIC_API_KEY;
   if (!KEY) return res.status(500).json({ error: 'No API key' });
