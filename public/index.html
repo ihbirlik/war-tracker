@@ -647,6 +647,29 @@ function setLang(lang){
   fetchData();
 }
 
+  let currentData = null;
+
+function parseNum(s) {
+  if (!s) return 0;
+  return parseInt(String(s).replace(/[^0-9]/g, '')) || 0;
+}
+
+function mergeData(old, fresh) {
+  if (!old) return fresh;
+  const s = fresh.stats;
+  const o = old.stats;
+  return {
+    ...fresh,
+    stats: {
+      ...s,
+      iran_casualties: parseNum(s.iran_casualties) > parseNum(o.iran_casualties) ? s.iran_casualties : o.iran_casualties,
+      us_israel_strikes: parseNum(s.us_israel_strikes) > parseNum(o.us_israel_strikes) ? s.us_israel_strikes : o.us_israel_strikes,
+      lebanon_casualties: parseNum(s.lebanon_casualties) > parseNum(o.lebanon_casualties) ? s.lebanon_casualties : o.lebanon_casualties,
+      displaced_civilians: parseNum(s.displaced_civilians) > parseNum(o.displaced_civilians) ? s.displaced_civilians : o.displaced_civilians,
+    }
+  };
+}
+
 // ── FETCH ──
 async function fetchData(){
   const tl=T[LANG];
@@ -658,7 +681,7 @@ async function fetchData(){
     if(!r.ok) throw new Error('HTTP '+r.status);
     const json=await r.json();
     if(!json.success) throw new Error(json.error||'Server error');
-    applyData(json.data);
+    const merged = mergeData(currentData, json.data); currentData = merged; applyData(merged);
     renderEcon(json.data.econ||null);
     bar.className='s-ok';
     bar.textContent=tl.ok(new Date().toLocaleTimeString(LANG==='tr'?'tr-TR':'en-US'));
