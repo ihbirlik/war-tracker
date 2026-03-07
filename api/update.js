@@ -1,46 +1,15 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
 
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-  if (!ANTHROPIC_API_KEY) return res.status(500).json({ error: 'API anahtarı tanımlanmamış' });
+  if (!ANTHROPIC_API_KEY) return res.status(500).json({ error: 'API key missing' });
 
   const lang = req.query.lang === 'en' ? 'en' : 'tr';
   const isEN = lang === 'en';
 
-  const systemPrompt = isEN
-    ? `You are a war data analyst. Search the web for the latest 2026 Iran-Israel-US war data and return ONLY valid JSON, no markdown, no explanation. Schema:
-{
-  "meta": { "day_count": <number>, "last_updated": "<date string>", "war_status": "<one sentence current status in English>" },
-  "stats": { "iran_casualties": "<number+>", "iran_casualties_source": "<source>", "us_israel_strikes": "<number+>", "lebanon_casualties": "<number+>", "war_cost_usd": "<e.g. $3.7B>", "displaced_civilians": "<e.g. 95,000+>" },
-  "feed": [ { "time": "<time>", "type": "critical|warning|info|intercept", "tags": ["iran"|"israel"|"usa"|"gulf"|"intercept"], "text": "<English news text, 1-2 sentences>" } ],
-  "factions": {
-    "israel": { "operation": "<name>", "status": "<status>", "aircraft": "<count>", "reserves": "<count>", "casualties": "<count>", "hezbollah": "<status>", "strength_pct": <0-100> },
-    "iran":   { "ballistic_reduction": "<pct>", "drone_reduction": "<pct>", "navy_status": "<status>", "airforce_status": "<status>", "casualties": "<count>", "hormuz": "<status>", "strength_pct": <0-100> },
-    "usa":    { "targets_hit": "<count+>", "ships_destroyed": "<count>", "us_casualties": "<count>", "cost_per_day": "<dollars>", "timeline": "<estimate>", "demand": "<demand>", "strength_pct": <0-100> }
-  },
-  "banner": "<warning banner text in English>",
-  "map_points": [ { "id": "<city_id>", "label": "<city name>", "tooltip": "<English description>", "type": "strike_us_israel|strike_iran|intercept" } ]
-}
-Feed: minimum 6 items. Map points: active conflict cities only.`
-    : `Sen bir savas veri analisti asistanisin. 2026 Iran-Israel-ABD savasi hakkinda web aramasi yap ve YALNIZCA gecerli JSON dondur, markdown veya aciklama YAZMA. Sema:
-{
-  "meta": { "day_count": <sayi>, "last_updated": "<tarih>", "war_status": "<Turkce bir cumle mevcut durum>" },
-  "stats": { "iran_casualties": "<sayi+>", "iran_casualties_source": "<kaynak>", "us_israel_strikes": "<sayi+>", "lebanon_casualties": "<sayi+>", "war_cost_usd": "<ornek: $3.7B>", "displaced_civilians": "<ornek: 95,000+>" },
-  "feed": [ { "time": "<saat>", "type": "critical|warning|info|intercept", "tags": ["iran"|"israel"|"usa"|"gulf"|"intercept"], "text": "<Turkce haber metni>" } ],
-  "factions": {
-    "israel": { "operation": "<adi>", "status": "<durum>", "aircraft": "<sayi>", "reserves": "<sayi>", "casualties": "<sayi>", "hezbollah": "<durum>", "strength_pct": <0-100> },
-    "iran":   { "ballistic_reduction": "<yuzde>", "drone_reduction": "<yuzde>", "navy_status": "<durum>", "airforce_status": "<durum>", "casualties": "<sayi>", "hormuz": "<durum>", "strength_pct": <0-100> },
-    "usa":    { "targets_hit": "<sayi+>", "ships_destroyed": "<sayi>", "us_casualties": "<sayi>", "cost_per_day": "<dolar>", "timeline": "<tahmin>", "demand": "<talep>", "strength_pct": <0-100> }
-  },
-  "banner": "<Turkce uyari banner metni>",
-  "map_points": [ { "id": "<sehir_id>", "label": "<sehir adi>", "tooltip": "<Turkce aciklama>", "type": "strike_us_israel|strike_iran|intercept" } ]
-}
-Feed icin minimum 6 haber. Map_points: sadece aktif catisma noktalari.`;
-
   const userMsg = isEN
-    ? '2026 Iran war latest: total casualties in Iran, US-Israel strike count, Lebanon casualties, which cities are being hit, factions status. Search latest news and return full JSON.'
-    : '2026 Iran savasi son dakika: Iran toplam kayip, ABD-Israel saldiri sayisi, Lubnan kayiplari, hangi sehirler vuruldu, taraflarin durumu. Guncel haberleri ara, tam JSON ver.';
+    ? 'Search the web for the latest 2026 Iran-Israel-US war news. Return ONLY valid JSON, no markdown: {"meta":{"day_count":9,"last_updated":"March 8, 2026","war_status":"one sentence"},"stats":{"iran_casualties":"1400+","iran_casualties_source":"source","us_israel_strikes":"3200+","lebanon_casualties":"210+","war_cost_usd":"$4B","displaced_civilians":"100000+"},"feed":[{"time":"08 MAR 10:00","type":"critical","tags":["iran"],"text":"news"},{"time":"08 MAR 09:00","type":"warning","tags":["usa"],"text":"news"},{"time":"08 MAR 08:00","type":"warning","tags":["gulf"],"text":"news"},{"time":"08 MAR 07:00","type":"critical","tags":["iran","israel"],"text":"news"},{"time":"07 MAR 20:00","type":"info","tags":["usa"],"text":"news"},{"time":"07 MAR 18:00","type":"critical","tags":["iran"],"text":"news"}],"factions":{"israel":{"operation":"Epic Fury","status":"ONGOING","aircraft":"80+","reserves":"70000","casualties":"12+","hezbollah":"ACTIVE","strength_pct":80},"iran":{"ballistic_reduction":"-92%","drone_reduction":"-85%","navy_status":"Destroyed","airforce_status":"Destroyed","casualties":"1400+","hormuz":"Threatened","strength_pct":15},"usa":{"targets_hit":"3200+","ships_destroyed":"43","us_casualties":"6","cost_per_day":"$900M","timeline":"4-6 weeks","demand":"Surrender","strength_pct":90}},"banner":"DAY 9 - STRIKES ONGOING","map_points":[{"id":"tehran","label":"Tehran","tooltip":"US-Israel strikes","type":"strike_us_israel"},{"id":"tel_aviv","label":"Tel Aviv","tooltip":"Iranian missiles","type":"strike_iran"},{"id":"beirut","label":"Beirut","tooltip":"Hezbollah clashes","type":"strike_us_israel"},{"id":"kuwait","label":"Kuwait","tooltip":"US base attacked","type":"strike_iran"}]}'
+    : 'Web\'de 2026 İran-İsrail-ABD savaşı son haberlerini ara. SADECE geçerli JSON döndür, markdown yok: {"meta":{"day_count":9,"last_updated":"8 Mart 2026","war_status":"tek cümle"},"stats":{"iran_casualties":"1400+","iran_casualties_source":"kaynak","us_israel_strikes":"3200+","lebanon_casualties":"210+","war_cost_usd":"$4M","displaced_civilians":"100000+"},"feed":[{"time":"08 MAR 10:00","type":"critical","tags":["iran"],"text":"haber"},{"time":"08 MAR 09:00","type":"warning","tags":["usa"],"text":"haber"},{"time":"08 MAR 08:00","type":"warning","tags":["gulf"],"text":"haber"},{"time":"08 MAR 07:00","type":"critical","tags":["iran","israel"],"text":"haber"},{"time":"07 MAR 20:00","type":"info","tags":["usa"],"text":"haber"},{"time":"07 MAR 18:00","type":"critical","tags":["iran"],"text":"haber"}],"factions":{"israel":{"operation":"Epik Öfke","status":"DEVAM","aircraft":"80+","reserves":"70000","casualties":"12+","hezbollah":"AKTİF","strength_pct":80},"iran":{"ballistic_reduction":"-%92","drone_reduction":"-%85","navy_status":"İmha","airforce_status":"İmha","casualties":"1400+","hormuz":"Tehdit","strength_pct":15},"usa":{"targets_hit":"3200+","ships_destroyed":"43","us_casualties":"6","cost_per_day":"$900M","timeline":"4-6 hafta","demand":"Teslim","strength_pct":90}},"banner":"9. GÜN - SALDIRILAR DEVAM","map_points":[{"id":"tehran","label":"Tahran","tooltip":"ABD-İsrail saldırıları","type":"strike_us_israel"},{"id":"tel_aviv","label":"Tel Aviv","tooltip":"İran füzeleri","type":"strike_iran"},{"id":"beirut","label":"Beyrut","tooltip":"Hizbullah çatışmaları","type":"strike_us_israel"},{"id":"kuwait","label":"Kuveyt","tooltip":"ABD üssü saldırısı","type":"strike_iran"}]}';
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -52,29 +21,32 @@ Feed icin minimum 6 haber. Map_points: sadece aktif catisma noktalari.`;
         'anthropic-beta': 'web-search-2025-03-05'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20251001',
-        max_tokens: 3000,
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: systemPrompt,
         messages: [{ role: 'user', content: userMsg }]
       })
     });
 
     const data = await response.json();
-    const textBlocks = data.content && data.content.filter(b => b.type === 'text');
-    const textBlock = textBlocks && textBlocks[textBlocks.length - 1];
-    if (!textBlock) throw new Error('No text response');
+    if (data.error) throw new Error(data.error.message);
 
-    let jsonStr = textBlock.text.trim().replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    let jsonStr = '';
+    for (const block of (data.content || [])) {
+      if (block.type === 'text') jsonStr = block.text;
+    }
+    if (!jsonStr) throw new Error('No text: ' + JSON.stringify(data.content?.map(b=>b.type)));
+
+    jsonStr = jsonStr.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
     const start = jsonStr.indexOf('{'), end = jsonStr.lastIndexOf('}');
-    if (start !== -1 && end !== -1) jsonStr = jsonStr.slice(start, end + 1);
+    if (start === -1) throw new Error('No JSON: ' + jsonStr.slice(0,300));
+    jsonStr = jsonStr.slice(start, end + 1);
 
     const parsed = JSON.parse(jsonStr);
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
-    return res.status(200).json({ success: true, data: parsed, fetchedAt: new Date().toISOString() });
+    return res.status(200).json({ success: true, data: parsed });
 
   } catch (err) {
-    console.error('Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
