@@ -207,7 +207,7 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
   <div class="sc blue">
     <div class="sc-label">SAVAŞIN GÜNÜ</div>
     <div class="sc-val" id="s-day"><span class="skel">——</span></div>
-    <div class="sc-sub">28 Şubat'tan itibaren</div>
+    <div class="sc-sub" id="s-day-sub">—</div>
   </div>
   <div class="sc red">
     <div class="sc-label">YERİNDEN EDİLEN</div>
@@ -647,6 +647,7 @@ function applyData(d){
     set('s-displaced', s.displaced_civilians);
     renderSources('s-displaced-sources', s.displaced_sources);
   }
+  if(d.econ) renderEcon(d.econ);
   if(d.feed&&d.feed.length) renderFeed(d.feed);
   if(d.map_points&&d.map_points.length) renderMap(d.map_points);
   if(d.factions){
@@ -667,7 +668,7 @@ function applyUITranslation(){
   document.querySelector('[data-key="econ-title"]').textContent=t.econ_title;
   document.querySelector('[data-key="tl-title"]').textContent=t.tl_title;
   document.querySelectorAll('.sc-label').forEach((el,i)=>{if(t.stat_labels[i])el.textContent=t.stat_labels[i];});
-  const subIds=['s-iran-sub','s-strikes-sub','s-lebanon-sub','s-cost-sub',null,'s-displaced-sub'];
+  const subIds=['s-iran-sub','s-strikes-sub','s-lebanon-sub','s-cost-sub','s-day-sub','s-displaced-sub'];
   subIds.forEach((id,i)=>{ if(id && t.stat_subs[i]) { const el=document.getElementById(id); if(el) el.textContent=t.stat_subs[i]; } });
   ['israel','iran','usa'].forEach(faction=>{
     document.querySelectorAll(`[data-faction="${faction}"] .lbl`).forEach((el,i)=>{
