@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         max_tokens: 2000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: lang === 'en'
-          ? 'News aggregator. Search web, return ONLY valid JSON, no markdown. Numbers like "1400+" not text. All text in English.'
+          ? 'News aggregator. Search web, return ONLY valid JSON, no markdown. war_cost_usd must be total war cost like "$4B" not daily cost. All numeric stats must have + sign like "1400+". Never use UNKNOWN. All text in English.'
           : 'Haber toplayıcı. Web ara, SADECE geçerli JSON döndür, markdown yok. Sayılar "1400+" formatında. Tüm metinler Türkçe.',
         messages: [{
           role: 'user',
