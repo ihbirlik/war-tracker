@@ -183,25 +183,25 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
   <div class="sc red">
     <div class="sc-label">İRAN'DA ÖLÜM</div>
     <div class="sc-val" id="s-iran-cas"><span class="skel">——</span></div>
-    <div class="sc-sub" id="s-iran-sub">yükleniyor...</div>
+    <div class="sc-sub" id="s-iran-sub">—</div>
     <div class="sc-sources" id="s-iran-sources"></div>
   </div>
   <div class="sc orange">
     <div class="sc-label">ABD-İSRAİL SALDIRISI</div>
     <div class="sc-val" id="s-strikes"><span class="skel">——</span></div>
-    <div class="sc-sub" id="s-strikes-sub">Hedef vuruldu</div>
+    <div class="sc-sub" id="s-strikes-sub">—</div>
     <div class="sc-sources" id="s-strikes-sources"></div>
   </div>
   <div class="sc orange">
     <div class="sc-label">LÜBNAN ÖLÜM</div>
     <div class="sc-val" id="s-lebanon"><span class="skel">——</span></div>
-    <div class="sc-sub" id="s-lebanon-sub">İsrail saldırıları</div>
+    <div class="sc-sub" id="s-lebanon-sub">—</div>
     <div class="sc-sources" id="s-lebanon-sources"></div>
   </div>
   <div class="sc green">
     <div class="sc-label">SAVAŞ MALİYETİ</div>
     <div class="sc-val" id="s-cost"><span class="skel">——</span></div>
-    <div class="sc-sub" id="s-cost-sub">Toplam tahmini</div>
+    <div class="sc-sub" id="s-cost-sub">—</div>
     <div class="sc-sources" id="s-cost-sources"></div>
   </div>
   <div class="sc blue">
@@ -212,7 +212,7 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
   <div class="sc red">
     <div class="sc-label">YERİNDEN EDİLEN</div>
     <div class="sc-val" id="s-displaced"><span class="skel">——</span></div>
-    <div class="sc-sub" id="s-displaced-sub">Sivil</div>
+    <div class="sc-sub" id="s-displaced-sub">—</div>
     <div class="sc-sources" id="s-displaced-sources"></div>
   </div>
 </div>
@@ -382,6 +382,7 @@ const T = {
     tag_labels: {iran:'İRAN',israel:'İSRAİL',usa:'ABD',gulf:'KÖRFEZ',intercept:'ÖNLEME'},
     econ_title: '▶ EKONOMİK GÖSTERGELER', tl_title: '▶ SAVAŞ ZAMANELİ',
     econ_labels: ['BRENT HAM PETROL','WTI HAM PETROL','DOLAR/TL','ALTIN ($/oz)'],
+    stat_subs: ['Kaynak:', 'Hedef vuruldu', 'İsrail saldırıları', 'Toplam tahmini', '28 Şubat\'tan itibaren', 'Sivil'],
   },
   en: {
     title: 'MIDDLE EAST <span>WAR</span> TRACKER',
@@ -402,6 +403,7 @@ const T = {
     tag_labels: {iran:'IRAN',israel:'ISRAEL',usa:'USA',gulf:'GULF',intercept:'INTERCEPT'},
     econ_title: '▶ ECONOMIC INDICATORS', tl_title: '▶ WAR TIMELINE',
     econ_labels: ['BRENT CRUDE OIL','WTI CRUDE OIL','USD/TRY','GOLD ($/oz)'],
+    stat_subs: ['Source:', 'Targets hit', 'Israel strikes', 'Total estimate', 'Since Feb 28', 'Civilians'],
   }
 };
 
@@ -665,6 +667,8 @@ function applyUITranslation(){
   document.querySelector('[data-key="econ-title"]').textContent=t.econ_title;
   document.querySelector('[data-key="tl-title"]').textContent=t.tl_title;
   document.querySelectorAll('.sc-label').forEach((el,i)=>{if(t.stat_labels[i])el.textContent=t.stat_labels[i];});
+  const subIds=['s-iran-sub','s-strikes-sub','s-lebanon-sub','s-cost-sub',null,'s-displaced-sub'];
+  subIds.forEach((id,i)=>{ if(id && t.stat_subs[i]) { const el=document.getElementById(id); if(el) el.textContent=t.stat_subs[i]; } });
   ['israel','iran','usa'].forEach(faction=>{
     document.querySelectorAll(`[data-faction="${faction}"] .lbl`).forEach((el,i)=>{
       if(t.faction_labels[faction][i]) el.textContent=t.faction_labels[faction][i];
