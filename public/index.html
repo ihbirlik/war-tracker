@@ -37,6 +37,15 @@ h1 span{color:var(--red);}
 .sc-val{font-family:var(--display);font-size:34px;line-height:1;margin-bottom:4px;}
 .sc.red .sc-val{color:var(--red);}.sc.orange .sc-val{color:var(--orange);}.sc.blue .sc-val{color:var(--blue);}.sc.green .sc-val{color:var(--green);}
 .sc-sub{font-size:11px;color:var(--dim);}
+/* SOURCES LIST */
+.sc-sources{margin-top:8px;border-top:1px solid rgba(26,58,92,.5);padding-top:6px;}
+.sc-source-item{display:flex;justify-content:space-between;align-items:center;padding:2px 0;gap:6px;}
+.sc-source-name{font-family:var(--mono);font-size:9px;color:var(--dim);flex-shrink:0;}
+.sc-source-val{font-family:var(--mono);font-size:10px;font-weight:600;}
+.sc.red .sc-source-val{color:rgba(255,68,68,.8);}
+.sc.orange .sc-source-val{color:rgba(255,136,0,.8);}
+.sc.blue .sc-source-val{color:rgba(0,204,255,.8);}
+.sc.green .sc-source-val{color:rgba(0,255,136,.8);}
 .main{display:grid;grid-template-columns:1fr 370px;gap:16px;margin-bottom:20px;}
 @media(max-width:900px){.main{grid-template-columns:1fr;}}
 .map-panel,.feed-panel{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
@@ -81,8 +90,6 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
 .lang-btn{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;letter-spacing:1.5px;transition:all .2s;}
 .lang-btn.active{background:var(--blue);border-color:var(--blue);color:#000;font-weight:600;}
 .lang-btn:hover:not(.active){border-color:var(--blue);color:var(--blue);}
-
-/* EKONOMIK GOSTERGELER */
 .econ-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;}
 .econ-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:border-color .3s;}
 .econ-card:hover{border-color:var(--blue);}
@@ -97,8 +104,6 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
 .econ-card.up .econ-change{color:var(--red);}
 .econ-card.down .econ-change{color:var(--green);}
 .econ-card.neutral .econ-change{color:var(--orange);}
-
-/* ZAMAN CIZELGESI */
 .timeline-wrap{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:20px;}
 .timeline-scroll{overflow-x:auto;padding:20px 20px 16px;}
 .timeline-scroll::-webkit-scrollbar{height:4px;}
@@ -114,8 +119,6 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
 .tl-date{font-family:var(--mono);font-size:9px;color:var(--dim);margin-bottom:4px;letter-spacing:1px;}
 .tl-text{font-size:10px;color:var(--text);text-align:center;line-height:1.4;padding:0 8px;}
 .tl-tooltip{position:fixed;background:var(--surface2);border:1px solid var(--blue);border-radius:4px;padding:10px 14px;font-size:11px;font-family:var(--mono);color:var(--text);pointer-events:none;opacity:0;transition:opacity .2s;z-index:1000;max-width:260px;line-height:1.6;}
-
-/* ── MOBİL UYUMLULUK ── */
 @media(max-width:600px){
   .wrap{padding:10px;}
   h1{font-size:20px;letter-spacing:1px;}
@@ -125,51 +128,34 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
   #clock{font-size:10px;}
   #banner{font-size:10px;padding:8px 10px;}
   #status-bar{font-size:10px;padding:6px 10px;}
-
-  /* Stats: 2 kolonlu grid */
   .stats{grid-template-columns:repeat(2,1fr);gap:8px;}
   .sc{padding:10px 12px;}
   .sc-val{font-size:26px;}
   .sc-label{font-size:9px;}
   .sc-sub{font-size:10px;}
-
-  /* Harita tam genişlik */
   .main{grid-template-columns:1fr;gap:10px;}
   .map-area{height:260px;}
-
-  /* Feed */
   .feed-scroll{max-height:300px;}
   .fi{padding:8px 10px;}
   .fi-text{font-size:11px;}
-
-  /* Faction kartları: tek kolon */
   .factions{grid-template-columns:1fr;gap:10px;}
   .fc-name{font-size:17px;}
-
-  /* Ekonomik göstergeler: 2 kolon */
   .econ-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
   .econ-card{padding:10px 12px;}
   .econ-value{font-size:22px;}
   .econ-label{font-size:9px;}
   .econ-change{font-size:9px;}
-
-  /* Timeline */
   .tl-item{width:120px;}
   .tl-text{font-size:9px;}
   .tl-date{font-size:8px;}
-
-  /* Footer */
   footer{flex-direction:column;align-items:flex-start;gap:6px;}
 }
-
 @media(max-width:400px){
   .stats{grid-template-columns:1fr 1fr;}
   .sc-val{font-size:22px;}
   .econ-grid{grid-template-columns:1fr 1fr;}
   h1{font-size:17px;}
 }
-
-/* Touch cihazlar için tooltip yerine tıklama */
 @media(hover:none){
   .strike-pt{-webkit-tap-highlight-color:transparent;}
   .tl-item{-webkit-tap-highlight-color:transparent;}
@@ -192,14 +178,43 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
   </div>
 </header>
 <div id="banner">⏳ Yükleniyor...</div>
-<div id="status-bar" class="s-load">⏳ Claude AI haber kaynaklarını tarıyor, lütfen bekleyin (10-20 sn)...</div>
+<div id="status-bar" class="s-load">⏳ Claude AI haber kaynaklarını tarıyor...</div>
 <div class="stats">
-  <div class="sc red"><div class="sc-label">İRAN'DA ÖLÜM</div><div class="sc-val" id="s-iran-cas"><span class="skel">——</span></div><div class="sc-sub" id="s-iran-src">yükleniyor...</div></div>
-  <div class="sc orange"><div class="sc-label">ABD-İSRAİL SALDIRISI</div><div class="sc-val" id="s-strikes"><span class="skel">——</span></div><div class="sc-sub">Hedef vuruldu</div></div>
-  <div class="sc orange"><div class="sc-label">LÜBNAN ÖLÜM</div><div class="sc-val" id="s-lebanon"><span class="skel">——</span></div><div class="sc-sub">İsrail saldırıları</div></div>
-  <div class="sc green"><div class="sc-label">SAVAŞ MALİYETİ</div><div class="sc-val" id="s-cost"><span class="skel">——</span></div><div class="sc-sub">Toplam tahmini</div></div>
-  <div class="sc blue"><div class="sc-label">SAVAŞIN GÜNÜ</div><div class="sc-val" id="s-day"><span class="skel">——</span></div><div class="sc-sub">28 Şubat'tan itibaren</div></div>
-  <div class="sc red"><div class="sc-label">YERİNDEN EDİLEN</div><div class="sc-val" id="s-displaced"><span class="skel">——</span></div><div class="sc-sub">Sivil</div></div>
+  <div class="sc red">
+    <div class="sc-label">İRAN'DA ÖLÜM</div>
+    <div class="sc-val" id="s-iran-cas"><span class="skel">——</span></div>
+    <div class="sc-sub" id="s-iran-sub">yükleniyor...</div>
+    <div class="sc-sources" id="s-iran-sources"></div>
+  </div>
+  <div class="sc orange">
+    <div class="sc-label">ABD-İSRAİL SALDIRISI</div>
+    <div class="sc-val" id="s-strikes"><span class="skel">——</span></div>
+    <div class="sc-sub" id="s-strikes-sub">Hedef vuruldu</div>
+    <div class="sc-sources" id="s-strikes-sources"></div>
+  </div>
+  <div class="sc orange">
+    <div class="sc-label">LÜBNAN ÖLÜM</div>
+    <div class="sc-val" id="s-lebanon"><span class="skel">——</span></div>
+    <div class="sc-sub" id="s-lebanon-sub">İsrail saldırıları</div>
+    <div class="sc-sources" id="s-lebanon-sources"></div>
+  </div>
+  <div class="sc green">
+    <div class="sc-label">SAVAŞ MALİYETİ</div>
+    <div class="sc-val" id="s-cost"><span class="skel">——</span></div>
+    <div class="sc-sub" id="s-cost-sub">Toplam tahmini</div>
+    <div class="sc-sources" id="s-cost-sources"></div>
+  </div>
+  <div class="sc blue">
+    <div class="sc-label">SAVAŞIN GÜNÜ</div>
+    <div class="sc-val" id="s-day"><span class="skel">——</span></div>
+    <div class="sc-sub">28 Şubat'tan itibaren</div>
+  </div>
+  <div class="sc red">
+    <div class="sc-label">YERİNDEN EDİLEN</div>
+    <div class="sc-val" id="s-displaced"><span class="skel">——</span></div>
+    <div class="sc-sub" id="s-displaced-sub">Sivil</div>
+    <div class="sc-sources" id="s-displaced-sources"></div>
+  </div>
 </div>
 <div class="main">
   <div class="map-panel">
@@ -295,8 +310,6 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
     </div>
   </div>
 </div>
-
-<!-- EKONOMIK GOSTERGELER -->
 <div class="panel-hdr" style="border-radius:4px 4px 0 0;margin-bottom:0" id="econ-header">
   <span data-key="econ-title">▶ EKONOMİK GÖSTERGELER</span>
   <span id="econ-update" style="font-size:10px;color:var(--dim)">yükleniyor</span>
@@ -335,10 +348,8 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
     </div>
   </div>
 </div>
-
-<!-- ZAMAN CIZELGESI -->
 <div class="timeline-wrap">
-  <div class="panel-hdr"><span data-key="tl-title">▶ SAVAŞ ZEMANELİ</span><span style="font-size:10px">◄ kaydır ►</span></div>
+  <div class="panel-hdr"><span data-key="tl-title">▶ SAVAŞ ZAMANELİ</span><span style="font-size:10px">◄ kaydır ►</span></div>
   <div class="timeline-scroll">
     <div class="timeline-track" id="timeline"></div>
   </div>
@@ -350,9 +361,7 @@ footer a{color:var(--blue);text-decoration:none;margin-right:10px;}
 </footer>
 </div>
 <script>
-// ── LANGUAGE SYSTEM ──
-let LANG = 'tr'; // no localStorage in artifacts
-
+let LANG = 'tr';
 const T = {
   tr: {
     title: 'ORTA DOĞU <span>SAVAŞ</span> TAKİP',
@@ -370,7 +379,6 @@ const T = {
       usa:    ['HEDEF VURULDU','GEMİ İMHASI','ABD KAYBI','MALİYET/GÜN','SÜRE TAHMİNİ','TRUMP TALEBİ'],
     },
     day_suffix: '. GÜN', source_prefix: 'Kaynak: ',
-    ai_update: '🤖 AI GÜNCELLEMESİ — ',
     tag_labels: {iran:'İRAN',israel:'İSRAİL',usa:'ABD',gulf:'KÖRFEZ',intercept:'ÖNLEME'},
     econ_title: '▶ EKONOMİK GÖSTERGELER', tl_title: '▶ SAVAŞ ZAMANELİ',
     econ_labels: ['BRENT HAM PETROL','WTI HAM PETROL','DOLAR/TL','ALTIN ($/oz)'],
@@ -391,63 +399,83 @@ const T = {
       usa:    ['TARGETS HIT','SHIPS DESTROYED','US CASUALTIES','COST/DAY','TIMELINE',"TRUMP'S DEMAND"],
     },
     day_suffix: ' DAYS', source_prefix: 'Source: ',
-    ai_update: '🤖 AI UPDATE — ',
     tag_labels: {iran:'IRAN',israel:'ISRAEL',usa:'USA',gulf:'GULF',intercept:'INTERCEPT'},
     econ_title: '▶ ECONOMIC INDICATORS', tl_title: '▶ WAR TIMELINE',
     econ_labels: ['BRENT CRUDE OIL','WTI CRUDE OIL','USD/TRY','GOLD ($/oz)'],
   }
 };
 
-// ── FALLBACK DATA ──
 const FALLBACK = {
   tr: {
-    banner: "OPERASYON EPİK ÖFKE — 8. GÜN — ABD-İSRAİL İRAN'A HAVA SALDIRISI — MİSİLLEMELER DEVAM EDİYOR",
-    meta: {day_count:8, last_updated:'7 Mart 2026'},
-    stats: {iran_casualties:'1,332+', iran_casualties_source:'İran Kızılay', us_israel_strikes:'3,000+', lebanon_casualties:'200+', war_cost_usd:'$3.7B', displaced_civilians:'95,000+'},
+    banner: "OPERASYON EPİK ÖFKE — 9. GÜN — ABD-İSRAİL İRAN'A HAVA SALDIRISI — MİSİLLEMELER DEVAM EDİYOR",
+    meta: {day_count:9, last_updated:'8 Mart 2026'},
+    stats: {
+      iran_casualties:'1,400+', iran_casualties_source:'İran Kızılay',
+      iran_sources:[{name:'İran Kızılay',val:'1,332+'},{name:'Reuters',val:'1,400+'}],
+      us_israel_strikes:'3,000+',
+      strikes_sources:[{name:'IDF Açıklaması',val:'3,000+'},{name:'Al Jazeera',val:'3,200+'}],
+      lebanon_casualties:'200+',
+      lebanon_sources:[{name:'Lübnan Sağlık',val:'200+'},{name:'Al Jazeera',val:'215+'}],
+      war_cost_usd:'$4B+',
+      cost_sources:[{name:'Pentagon',val:'$3.7B+'},{name:'CSIS Tahmini',val:'$4B+'}],
+      displaced_civilians:'100,000+',
+      displaced_sources:[{name:'BM OCHA',val:'95,000+'},{name:'Tahmin',val:'100,000+'}]
+    },
     feed: [
-      {time:'07 MAR 06:12',type:'critical',tags:['iran','israel'],text:"İran'ın Devrim Muhafızları, Tel Aviv'e kombine İHA ve füze saldırısı başlattı."},
+      {time:'08 MAR 06:12',type:'critical',tags:['iran','israel'],text:"İran'ın Devrim Muhafızları, Tel Aviv'e kombine İHA ve füze saldırısı başlattı."},
       {time:'07 MAR 05:44',type:'critical',tags:['usa','israel'],text:"İsrail 80+ savaş uçağıyla Tahran'a geniş çaplı saldırı başlattı. Mehrabad Havalimanı hedef alındı."},
       {time:'07 MAR 04:31',type:'warning',tags:['gulf'],text:"Suudi Arabistan, Shaybah petrol sahasına yönelik 16 İran İHA'sını önledi."},
-      {time:'07 MAR 02:10',type:'critical',tags:['iran'],text:"İran'daki ölü sayısı 1.332'ye yükseldi. Okullar ve hastaneler de hedef alındı."},
+      {time:'07 MAR 02:10',type:'critical',tags:['iran'],text:"İran'daki ölü sayısı 1.400'e yükseldi."},
       {time:'05 MAR 09:00',type:'critical',tags:['usa','iran'],text:"ABD denizaltısı Iris Dena'yı Hint Okyanusu'nda batırdı."},
       {time:'03 MAR 14:20',type:'warning',tags:['israel'],text:"İsrail Beyrut güneyini bombaladı, Hizbullah mevzileri hedef alındı."},
     ],
     factions: {
-      israel: {operation:'Epik Öfke',status:'DEVAM EDİYOR',aircraft:'80+ F-35/F-16',reserves:'70,000',casualties:'10+',hezbollah:'AKTİF / IRON DOME',strength_pct:82},
-      iran:   {ballistic_reduction:'-%90',drone_reduction:'-%83',navy_status:'İmha edildi',airforce_status:'İmha edildi',casualties:'1,332+',hormuz:'Tehdit altında',strength_pct:18},
+      israel: {operation:'Epik Öfke',status:'DEVAM EDİYOR',aircraft:'80+ F-35/F-16',reserves:'70,000',casualties:'12+',hezbollah:'AKTİF / IRON DOME',strength_pct:82},
+      iran:   {ballistic_reduction:'-%90',drone_reduction:'-%83',navy_status:'İmha edildi',airforce_status:'İmha edildi',casualties:'1,400+',hormuz:'Tehdit altında',strength_pct:18},
       usa:    {targets_hit:'3,000+',ships_destroyed:'43',us_casualties:'6 asker',cost_per_day:'$891M',timeline:'4-6 hafta',demand:'Koşulsuz teslim',strength_pct:90}
     },
     map_points: [
-      {id:'tehran',label:'Tahran',tooltip:'Tahran: ABD-İsrail hava saldırıları. Mehrabad Havalimanı hedef alındı.',type:'strike_us_israel'},
+      {id:'tehran',label:'Tahran',tooltip:'Tahran: ABD-İsrail hava saldırıları.',type:'strike_us_israel'},
       {id:'isfahan',label:'İsfahan',tooltip:'İsfahan: Askeri altyapı vuruldu.',type:'strike_us_israel'},
       {id:'tel_aviv',label:'Tel Aviv',tooltip:'Tel Aviv: İran balistik füze saldırıları.',type:'strike_iran'},
-      {id:'beirut',label:'Beyrut',tooltip:"Beyrut: İsrail Hizbullah bölgesini vurdu. 200+ ölü.",type:'strike_us_israel'},
+      {id:'beirut',label:'Beyrut',tooltip:"Beyrut: İsrail Hizbullah bölgesini vurdu.",type:'strike_us_israel'},
       {id:'kuwait',label:'Kuveyt',tooltip:'Kuveyt: ABD komuta merkezi vuruldu.',type:'strike_iran'},
-      {id:'dubai',label:'Dubai',tooltip:'Dubai: Havalimanı İHA saldırısına maruz kaldı.',type:'strike_iran'},
+      {id:'dubai',label:'Dubai',tooltip:'Dubai: İHA saldırısına maruz kaldı.',type:'strike_iran'},
     ]
   },
   en: {
-    banner: "OPERATION EPIC FURY — DAY 8 — US-ISRAEL STRIKES ON IRAN — IRANIAN RETALIATION ONGOING",
-    meta: {day_count:8, last_updated:'March 7, 2026'},
-    stats: {iran_casualties:'1,332+', iran_casualties_source:'Iranian Red Crescent', us_israel_strikes:'3,000+', lebanon_casualties:'200+', war_cost_usd:'$3.7B', displaced_civilians:'95,000+'},
+    banner: "OPERATION EPIC FURY — DAY 9 — US-ISRAEL STRIKES ON IRAN — IRANIAN RETALIATION ONGOING",
+    meta: {day_count:9, last_updated:'March 8, 2026'},
+    stats: {
+      iran_casualties:'1,400+', iran_casualties_source:'Iranian Red Crescent',
+      iran_sources:[{name:'Iranian Red Crescent',val:'1,332+'},{name:'Reuters',val:'1,400+'}],
+      us_israel_strikes:'3,000+',
+      strikes_sources:[{name:'IDF Statement',val:'3,000+'},{name:'Al Jazeera',val:'3,200+'}],
+      lebanon_casualties:'200+',
+      lebanon_sources:[{name:'Lebanon Health Min.',val:'200+'},{name:'Al Jazeera',val:'215+'}],
+      war_cost_usd:'$4B+',
+      cost_sources:[{name:'Pentagon',val:'$3.7B+'},{name:'CSIS Estimate',val:'$4B+'}],
+      displaced_civilians:'100,000+',
+      displaced_sources:[{name:'UN OCHA',val:'95,000+'},{name:'Estimate',val:'100,000+'}]
+    },
     feed: [
-      {time:'07 MAR 06:12',type:'critical',tags:['iran','israel'],text:"Iran's Revolutionary Guard launched combined drone and missile attack on Tel Aviv."},
+      {time:'08 MAR 06:12',type:'critical',tags:['iran','israel'],text:"Iran's Revolutionary Guard launched combined drone and missile attack on Tel Aviv."},
       {time:'07 MAR 05:44',type:'critical',tags:['usa','israel'],text:"Israel launched broad-scale strikes on Tehran with 80+ fighter jets. Mehrabad Airport targeted."},
       {time:'07 MAR 04:31',type:'warning',tags:['gulf'],text:"Saudi Arabia intercepted 16 Iranian drones headed toward Shaybah oil field."},
-      {time:'07 MAR 02:10',type:'critical',tags:['iran'],text:"Death toll in Iran rises to 1,332+. Schools and hospitals reportedly struck."},
+      {time:'07 MAR 02:10',type:'critical',tags:['iran'],text:"Death toll in Iran rises to 1,400+."},
       {time:'05 MAR 09:00',type:'critical',tags:['usa','iran'],text:"US submarine sank Iranian frigate Iris Dena in the Indian Ocean."},
       {time:'03 MAR 14:20',type:'warning',tags:['israel'],text:"Israel bombed southern Beirut, targeting Hezbollah positions."},
     ],
     factions: {
-      israel: {operation:'Epic Fury',status:'ONGOING',aircraft:'80+ F-35/F-16',reserves:'70,000',casualties:'10+',hezbollah:'ACTIVE / IRON DOME',strength_pct:82},
-      iran:   {ballistic_reduction:'-90%',drone_reduction:'-83%',navy_status:'Destroyed',airforce_status:'Destroyed',casualties:'1,332+',hormuz:'Under threat',strength_pct:18},
+      israel: {operation:'Epic Fury',status:'ONGOING',aircraft:'80+ F-35/F-16',reserves:'70,000',casualties:'12+',hezbollah:'ACTIVE / IRON DOME',strength_pct:82},
+      iran:   {ballistic_reduction:'-90%',drone_reduction:'-83%',navy_status:'Destroyed',airforce_status:'Destroyed',casualties:'1,400+',hormuz:'Under threat',strength_pct:18},
       usa:    {targets_hit:'3,000+',ships_destroyed:'43',us_casualties:'6 soldiers',cost_per_day:'$891M',timeline:'4-6 weeks',demand:'Unconditional surrender',strength_pct:90}
     },
     map_points: [
-      {id:'tehran',label:'Tehran',tooltip:'Tehran: US-Israel airstrikes. Mehrabad Airport targeted.',type:'strike_us_israel'},
+      {id:'tehran',label:'Tehran',tooltip:'Tehran: US-Israel airstrikes.',type:'strike_us_israel'},
       {id:'isfahan',label:'Isfahan',tooltip:'Isfahan: Military infrastructure struck.',type:'strike_us_israel'},
       {id:'tel_aviv',label:'Tel Aviv',tooltip:'Tel Aviv: Iranian ballistic missile attacks.',type:'strike_iran'},
-      {id:'beirut',label:'Beirut',tooltip:"Beirut: Israel struck Hezbollah district. 200+ killed.",type:'strike_us_israel'},
+      {id:'beirut',label:'Beirut',tooltip:"Beirut: Israel struck Hezbollah district.",type:'strike_us_israel'},
       {id:'kuwait',label:'Kuwait',tooltip:'Kuwait: US command center struck.',type:'strike_iran'},
       {id:'dubai',label:'Dubai',tooltip:'Dubai: Airport targeted by drone attacks.',type:'strike_iran'},
     ]
@@ -471,34 +499,34 @@ const ECON_FALLBACK = {
 
 const TIMELINE = {
   tr: [
-    {date:'28 ŞUB',type:'critical',short:'Savaş başladı',      detail:"ABD ve İsrail İran'a ortak hava saldırıları başlattı. Tahran, İsfahan ve Kum hedef alındı."},
-    {date:'28 ŞUB',type:'critical',short:'Hamaney öldürüldü',  detail:'Hava saldırısında Yüksek Lider Ali Hamaney ve onlarca üst düzey yetkili hayatını kaybetti.'},
+    {date:'28 ŞUB',type:'critical',short:'Savaş başladı',      detail:"ABD ve İsrail İran'a ortak hava saldırıları başlattı."},
+    {date:'28 ŞUB',type:'critical',short:'Hamaney öldürüldü',  detail:'Hava saldırısında Yüksek Lider Ali Hamaney hayatını kaybetti.'},
     {date:'1 MAR', type:'warning', short:'İran misilleme',      detail:"İran, İsrail ve ABD üslerine balistik füze ve İHA saldırısı başlattı."},
-    {date:'2 MAR', type:'critical',short:'Tahran vuruldu',      detail:'IRGC binası tamamen yıkıldı. İran devlet yayıncısı IRIB hedef alındı.'},
-    {date:'3 MAR', type:'warning', short:'Lübnan cephesi',      detail:"Hizbullah İsrail'e roket saldırısı başlattı. İsrail Beyrut'un güneyini bombaladı."},
-    {date:'4 MAR', type:'info',    short:'BM acil toplantı',    detail:"BM Güvenlik Konseyi acil toplandı. İran ABD ve İsrail'i savaş suçuyla itham etti."},
-    {date:'5 MAR', type:'critical',short:'İran fırkateyni battı',detail:"ABD denizaltısı Hint Okyanusu'nda İran fırkateyni Iris Dena'yı batırdı."},
+    {date:'2 MAR', type:'critical',short:'Tahran vuruldu',      detail:'IRGC binası tamamen yıkıldı.'},
+    {date:'3 MAR', type:'warning', short:'Lübnan cephesi',      detail:"Hizbullah İsrail'e roket saldırısı başlattı."},
+    {date:'4 MAR', type:'info',    short:'BM acil toplantı',    detail:"BM Güvenlik Konseyi acil toplandı."},
+    {date:'5 MAR', type:'critical',short:'İran fırkateyni battı',detail:"ABD denizaltısı Iris Dena'yı batırdı."},
     {date:'6 MAR', type:'critical',short:'Kıbrıs vuruldu',     detail:"İngiliz RAF üssü İran İHA'sı tarafından vuruldu."},
-    {date:'7 MAR', type:'warning', short:'8. gün',              detail:"Saldırılar sürüyor. İran'da 1.332+ sivil hayatını kaybetti."},
+    {date:'7 MAR', type:'warning', short:'8. gün',              detail:"Saldırılar sürüyor. İran'da 1.400+ sivil hayatını kaybetti."},
+    {date:'8 MAR', type:'critical',short:'9. gün',              detail:"Operasyon devam ediyor. Yeni cepheler açılıyor."},
   ],
   en: [
-    {date:'FEB 28',type:'critical',short:'War begins',         detail:'US and Israel launch joint airstrikes on Iran targeting Tehran, Isfahan and Qom.'},
-    {date:'FEB 28',type:'critical',short:'Khamenei killed',    detail:'Supreme Leader Ali Khamenei killed in airstrike on Tehran.'},
-    {date:'MAR 1', type:'warning', short:'Iran retaliates',    detail:'Iran launches ballistic missiles and drones at Israel, US bases and Gulf states.'},
-    {date:'MAR 2', type:'critical',short:'Tehran struck',      detail:'IRGC building destroyed. State broadcaster IRIB headquarters hit.'},
-    {date:'MAR 3', type:'warning', short:'Lebanon front',      detail:'Hezbollah fires rockets at Israel. Israel strikes southern Beirut.'},
-    {date:'MAR 4', type:'info',    short:'UN emergency',       detail:'UN Security Council holds emergency session. Iran accuses US and Israel of war crimes.'},
-    {date:'MAR 5', type:'critical',short:'Iranian frigate sunk',detail:'US submarine sinks Iranian frigate Iris Dena in Indian Ocean.'},
+    {date:'FEB 28',type:'critical',short:'War begins',         detail:'US and Israel launch joint airstrikes on Iran.'},
+    {date:'FEB 28',type:'critical',short:'Khamenei killed',    detail:'Supreme Leader Ali Khamenei killed in airstrike.'},
+    {date:'MAR 1', type:'warning', short:'Iran retaliates',    detail:'Iran launches ballistic missiles and drones.'},
+    {date:'MAR 2', type:'critical',short:'Tehran struck',      detail:'IRGC building destroyed.'},
+    {date:'MAR 3', type:'warning', short:'Lebanon front',      detail:'Hezbollah fires rockets at Israel.'},
+    {date:'MAR 4', type:'info',    short:'UN emergency',       detail:'UN Security Council holds emergency session.'},
+    {date:'MAR 5', type:'critical',short:'Iranian frigate sunk',detail:'US submarine sinks Iranian frigate Iris Dena.'},
     {date:'MAR 6', type:'critical',short:'Cyprus hit',         detail:'British RAF base struck by Iranian drone.'},
-    {date:'MAR 7', type:'warning', short:'Day 8',              detail:'Strikes continue. 1,332+ civilians killed in Iran.'},
+    {date:'MAR 7', type:'warning', short:'Day 8',              detail:'Strikes continue. 1,400+ killed in Iran.'},
+    {date:'MAR 8', type:'critical',short:'Day 9',              detail:'Operation continues. New fronts opening.'},
   ]
 };
 
-// ── CLOCK ──
 function tick(){document.getElementById('clock').textContent=new Date().toUTCString().slice(17,25)+' UTC';}
 tick(); setInterval(tick,1000);
 
-// ── MAP ──
 const COORDS={tehran:{cx:470,cy:155},isfahan:{cx:455,cy:195},bushehr:{cx:430,cy:220},tel_aviv:{cx:238,cy:178},beirut:{cx:243,cy:158},kuwait:{cx:395,cy:210},bahrain:{cx:432,cy:248},dubai:{cx:472,cy:268},cyprus:{cx:185,cy:130},baghdad:{cx:330,cy:155}};
 const DEFAULT={cx:470,cy:160};
 const TYPE_COL={strike_us_israel:'#00ccff',strike_iran:'#ff4444',intercept:'#00ff88',default:'#ff8800'};
@@ -534,42 +562,35 @@ function renderMap(pts){
   });
 }
 
-// ── FEED ──
-function renderFeed(items,prepend){
+function renderFeed(items){
   const tl=T[LANG];
   const feed=document.getElementById('feed');
-  if(!prepend) feed.innerHTML='';
+  feed.innerHTML='';
   items.forEach((item,i)=>{
     const div=document.createElement('div');
     div.className='fi '+(item.type||'info');
-    div.style.animationDelay=(prepend?0:i*0.07)+'s';
+    div.style.animationDelay=(i*0.07)+'s';
     const tags=(item.tags||[]).map(t=>`<span class="tag ${TAG_CLS[t]||'t-iran'}">${tl.tag_labels[t]||t}</span>`).join('');
     div.innerHTML=`<div class="fi-time">${item.time||''}</div><div class="fi-text">${tags}${item.text||''}</div>`;
-    prepend?feed.prepend(div):feed.appendChild(div);
+    feed.appendChild(div);
   });
   document.getElementById('feed-count').textContent=tl.events(feed.children.length);
 }
 
-// ── ECON ──
 function renderEcon(data){
   const tl=T[LANG];
   const e=data||(ECON_FALLBACK[LANG]);
   ['brent','wti','usd','gold'].forEach((k,i)=>{
     const d=e[k]; if(!d) return;
-    const card=document.getElementById('ec-'+k);
-    const val=document.getElementById('ec-'+k+'-val');
-    const chg=document.getElementById('ec-'+k+'-chg');
-    const lbl=document.getElementById('ec-'+k+'-lbl');
-    if(val) val.textContent=d.val;
-    if(chg) chg.textContent=d.chg;
-    if(lbl) lbl.textContent=tl.econ_labels[i];
-    if(card) card.className='econ-card '+(d.dir||'neutral');
+    document.getElementById('ec-'+k+'-val').textContent=d.val;
+    document.getElementById('ec-'+k+'-chg').textContent=d.chg;
+    document.getElementById('ec-'+k+'-lbl').textContent=tl.econ_labels[i];
+    document.getElementById('ec-'+k).className='econ-card '+(d.dir||'neutral');
   });
   const upd=document.getElementById('econ-update');
   if(upd) upd.textContent=LANG==='tr'?'Tahmin (savaş etkisi)':'Estimated (war impact)';
 }
 
-// ── TIMELINE ──
 function renderTimeline(){
   const items=TIMELINE[LANG];
   const track=document.getElementById('timeline');
@@ -580,14 +601,22 @@ function renderTimeline(){
     const el=document.createElement('div');
     el.className='tl-item '+item.type;
     el.innerHTML=`<div class="tl-date">${item.date}</div><div class="tl-dot"></div><div class="tl-text">${item.short}</div>`;
-    el.addEventListener('mouseenter',e=>{tt.textContent=item.detail;tt.style.opacity='1';});
+    el.addEventListener('mouseenter',()=>{tt.textContent=item.detail;tt.style.opacity='1';});
     el.addEventListener('mousemove',e=>{tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-40)+'px';});
     el.addEventListener('mouseleave',()=>{tt.style.opacity='0';});
     track.appendChild(el);
   });
 }
 
-// ── APPLY DATA ──
+// ── RENDER SOURCES ──
+function renderSources(containerId, sources) {
+  const el = document.getElementById(containerId);
+  if (!el || !sources || !sources.length) { if(el) el.innerHTML=''; return; }
+  el.innerHTML = sources.map(s =>
+    `<div class="sc-source-item"><span class="sc-source-name">${s.name}</span><span class="sc-source-val">${s.val}</span></div>`
+  ).join('');
+}
+
 function set(id,val){const el=document.getElementById(id);if(el&&val!=null)el.innerHTML=val;}
 
 function applyData(d){
@@ -600,14 +629,23 @@ function applyData(d){
   }
   if(d.stats){
     const s=d.stats;
-    set('s-iran-cas',s.iran_casualties);
-    document.getElementById('s-iran-src').textContent=tl.source_prefix+(s.iran_casualties_source||(LANG==='tr'?'Haber kaynakları':'News sources'));
-    set('s-strikes',s.us_israel_strikes);
-    set('s-lebanon',s.lebanon_casualties);
-    set('s-cost',s.war_cost_usd);
-    set('s-displaced',s.displaced_civilians);
+    set('s-iran-cas', s.iran_casualties);
+    document.getElementById('s-iran-sub').textContent = tl.source_prefix+(s.iran_casualties_source||'');
+    renderSources('s-iran-sources', s.iran_sources);
+
+    set('s-strikes', s.us_israel_strikes);
+    renderSources('s-strikes-sources', s.strikes_sources);
+
+    set('s-lebanon', s.lebanon_casualties);
+    renderSources('s-lebanon-sources', s.lebanon_sources);
+
+    set('s-cost', s.war_cost_usd);
+    renderSources('s-cost-sources', s.cost_sources);
+
+    set('s-displaced', s.displaced_civilians);
+    renderSources('s-displaced-sources', s.displaced_sources);
   }
-  if(d.feed&&d.feed.length) renderFeed(d.feed,false);
+  if(d.feed&&d.feed.length) renderFeed(d.feed);
   if(d.map_points&&d.map_points.length) renderMap(d.map_points);
   if(d.factions){
     const{israel:il,iran:ir,usa:us}=d.factions;
@@ -617,7 +655,6 @@ function applyData(d){
   }
 }
 
-// ── TRANSLATE UI ──
 function applyUITranslation(){
   const t=T[LANG];
   document.querySelector('h1').innerHTML=t.title;
@@ -635,7 +672,6 @@ function applyUITranslation(){
   });
 }
 
-// ── SET LANG ──
 function setLang(lang){
   LANG=lang;
   document.getElementById('btn-tr').classList.toggle('active',lang==='tr');
@@ -647,30 +683,6 @@ function setLang(lang){
   fetchData();
 }
 
-  let currentData = null;
-
-function parseNum(s) {
-  if (!s) return 0;
-  return parseInt(String(s).replace(/[^0-9]/g, '')) || 0;
-}
-
-function mergeData(old, fresh) {
-  if (!old) return fresh;
-  const s = fresh.stats;
-  const o = old.stats;
-  return {
-    ...fresh,
-    stats: {
-      ...s,
-      iran_casualties: parseNum(s.iran_casualties) > parseNum(o.iran_casualties) ? s.iran_casualties : o.iran_casualties,
-      us_israel_strikes: parseNum(s.us_israel_strikes) > parseNum(o.us_israel_strikes) ? s.us_israel_strikes : o.us_israel_strikes,
-      lebanon_casualties: parseNum(s.lebanon_casualties) > parseNum(o.lebanon_casualties) ? s.lebanon_casualties : o.lebanon_casualties,
-      displaced_civilians: parseNum(s.displaced_civilians) > parseNum(o.displaced_civilians) ? s.displaced_civilians : o.displaced_civilians,
-    }
-  };
-}
-
-// ── FETCH ──
 async function fetchData(){
   const tl=T[LANG];
   const bar=document.getElementById('status-bar');
@@ -681,7 +693,7 @@ async function fetchData(){
     if(!r.ok) throw new Error('HTTP '+r.status);
     const json=await r.json();
     if(!json.success) throw new Error(json.error||'Server error');
-    const merged = mergeData(currentData, json.data); currentData = merged; applyData(merged);
+    applyData(json.data);
     renderEcon(json.data.econ||null);
     bar.className='s-ok';
     bar.textContent=tl.ok(new Date().toLocaleTimeString(LANG==='tr'?'tr-TR':'en-US'));
@@ -693,7 +705,6 @@ async function fetchData(){
   }
 }
 
-// ── INIT ──
 applyUITranslation();
 applyData(FALLBACK[LANG]);
 renderEcon(null);
