@@ -52,7 +52,7 @@ Feed icin minimum 6 haber. Map_points: sadece aktif catisma noktalari.`;
         'anthropic-beta': 'web-search-2025-03-05'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-5-20251001',
         max_tokens: 3000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: systemPrompt,
