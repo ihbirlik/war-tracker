@@ -63,7 +63,7 @@ module.exports = async function handler(req, res) {
     const parsed = parseJSON(text);
     parsed.econ = normalizeEcon(parsed.econ);
 
-    res.setHeader('Cache-Control', 's-maxage=1800');
+    res.setHeader('Cache-Control', 's-maxage=7200');
     return res.status(200).json({ success: true, data: parsed });
   } catch (err) {
     return res.status(500).json({ error: err.message });
