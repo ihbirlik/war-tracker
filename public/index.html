@@ -619,7 +619,8 @@ function renderSources(containerId, sources) {
   ).join('');
 }
 
-function set(id,val){const el=document.getElementById(id);if(el&&val!=null)el.innerHTML=val;}
+const BAD_VALS=["verileri yok","veri yok","bilinmiyor","belirsiz","n/a","rapor yok","alınamadı"];
+function set(id,val){const el=document.getElementById(id);if(el&&val!=null){const v=String(val);if(BAD_VALS.some(b=>v.toLowerCase().includes(b)))return;el.innerHTML=v;}}
 
 function applyData(d){
   const tl=T[LANG];
